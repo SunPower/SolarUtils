@@ -1,0 +1,19 @@
+# build
+build/
+dist/
+solar_utils.egg.info/
+*.pyc
+*.dylib
+*.so
+*.dll
+
+# IDE
+.idea/
+.settings/
+.project
+.pydevproject
+SolarUtils.sublime-workspace
+SolarUtils.sublime-project
+
+# sphinx
+docs/_build/

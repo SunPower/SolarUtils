@@ -1,11 +1,16 @@
 # build
 build/
 dist/
-solar_utils.egg.info/
+solar_utils.egg-info/
 *.pyc
 *.dylib
 *.so
 *.dll
+*.exp
+*.obj
+*.lib
+*.a
+*.dll.manifest
 
 # IDE
 .idea/

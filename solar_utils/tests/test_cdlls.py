@@ -19,9 +19,8 @@ import numpy as np
 import os
 from nose.tools import ok_
 
-from pvsimlife.solar_utils import solposAM, spectrl2
-from pvsimlife.solar_utils.solar_utils_exceptions import SOLPOS_Error, \
-    SPECTRL2_Error
+from solar_utils import *
+from solar_utils.solar_utils_exceptions import SOLPOS_Error, SPECTRL2_Error
 
 _DIRNAME = os.path.dirname(__file__)
 TOL = 1E-3

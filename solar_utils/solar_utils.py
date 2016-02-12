@@ -63,7 +63,7 @@ def solposAM(location, datetime, weather):
     :type weather: list of floats
     :returns: angles, airmass
     :rtype: float
-    :raises: :exc:`~pvsimlife.solar_utils.solar_utils_exceptions.SOLPOS_Error`
+    :raises: :exc:`~solar_utils.solar_utils_exceptions.SOLPOS_Error`
     """
     # load the DLL
     solposAMdll = ctypes.cdll.LoadLibrary(SOLPOSAMDLL)
@@ -120,8 +120,8 @@ def spectrl2(units, location, datetime, weather, orientation,
     :type albedo: list of lists of floats
     :returns: specdif, specdir, specetr, specglo and specx
     :rtype: float
-    :raises: :exc:`~pvsimlife.solar_utils.solar_utils_exceptions.SPECTRL2_Error`,
-        :exc:`~pvsimlife.solar_utils.solar_utils_exceptions.SOLPOS_Error`
+    :raises: :exc:`~solar_utils.solar_utils_exceptions.SPECTRL2_Error`,
+        :exc:`~solar_utils.solar_utils_exceptions.SOLPOS_Error`
 
     .. seealso::
         :func:`solposAM`

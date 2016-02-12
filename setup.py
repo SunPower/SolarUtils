@@ -11,12 +11,9 @@ except ImportError:
     sys.exit('setuptools was not detected - please install setuptools and pip')
 from solar_utils import __version__ as VERSION, __name__ as NAME
 from solar_utils.tests import test_cdlls
-import logging
 
-logging.basicConfig(level=logging.DEBUG)
-LOGGER = logging.getLogger(__name__)
 # set platform constants
-CCFLAGS, RPATH, INSTALL_NAME, LDFLAGS = None, None, None, None
+CCFLAGS, RPATH, INSTALL_NAME = None, None, None
 PLATFORM = sys.platform
 if PLATFORM == 'win32':
     SRC_DIR = 'win32'
@@ -71,8 +68,14 @@ LIB_FILES_EXIST = all([
     os.path.exists(os.path.join(LIB_DIR, SPECTRL2_LIB_FILE))
 ])
 
-# build libraries if they don't exist
-if not LIB_FILES_EXIST:
+# run clean or build libraries if they don't exist
+if 'clean' in sys.argv:
+    try:
+        os.remove(os.path.join(LIB_DIR, SOLPOSAM_LIB_FILE))
+        os.remove(os.path.join(LIB_DIR, SPECTRL2_LIB_FILE))
+    except OSError as err:
+        sys.stderr.write('%s\n' % err)
+elif not LIB_FILES_EXIST:
     # clean build directory
     if os.path.exists(BUILD_DIR):
         shutil.rmtree(BUILD_DIR)  # delete entire directory tree
@@ -84,26 +87,22 @@ if not LIB_FILES_EXIST:
     OBJS = CC.compile([SOLPOS, SOLPOSAM], output_dir=BUILD_DIR,
                       extra_preargs=CCFLAGS)
     # link objects and make shared library in build directory
-    LDFLAGS = make_ldflags(SOLPOSAM_LIB)  # make linker option flags for compiler
-    LOGGER.debug('%s LDFLAGS: %r', SPECTRL2_LIB, LDFLAGS)
     CC.link_shared_lib(OBJS, SOLPOSAM_LIB, output_dir=BUILD_DIR,
-                       extra_preargs=LDFLAGS)
+                       extra_preargs=make_ldflags(SOLPOSAM_LIB))
     # compile spectrl2 objects into build directory
     OBJS = CC.compile([SPECTRL2, SPECTRL2_2, SOLPOS], output_dir=BUILD_DIR,
                       extra_preargs=CCFLAGS)
     CC.set_libraries([SOLPOSAM_LIB])  # set linked libraries
     CC.set_library_dirs([BUILD_DIR])  # set library directories
     # link objects and make shared library in build directory
-    LDFLAGS = make_ldflags(SPECTRL2_LIB)  # make linker option flags for compiler
-    LOGGER.debug('%s LDFLAGS: %r', SPECTRL2_LIB, LDFLAGS)
     CC.link_shared_lib(OBJS, SPECTRL2_LIB, output_dir=BUILD_DIR,
-                       extra_preargs=LDFLAGS)
+                       extra_preargs=make_ldflags(SPECTRL2_LIB))
     # copy files from build to library folder
     shutil.copy(os.path.join(BUILD_DIR, SOLPOSAM_LIB_FILE), LIB_DIR)
     shutil.copy(os.path.join(BUILD_DIR, SPECTRL2_LIB_FILE), LIB_DIR)
-# test libraries
-test_cdlls.test_solposAM()
-test_cdlls.test_spectrl2()
+    # test libraries
+    test_cdlls.test_solposAM()
+    test_cdlls.test_spectrl2()
 
 setup(name=NAME,
       version=VERSION,

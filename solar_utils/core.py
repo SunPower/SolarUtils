@@ -18,9 +18,7 @@ import ctypes
 import math
 import os
 import sys
-
-from solar_utils_exceptions import SOLPOS_Error
-from solar_utils_exceptions import SPECTRL2_Error
+from solar_utils.exceptions import SOLPOS_Error, SPECTRL2_Error
 
 _DIRNAME = os.path.dirname(__file__)
 if sys.platform == 'win32':
@@ -35,19 +33,18 @@ elif sys.platform.startswith('darwin'):
     PLATFORM = 'darwin'
     SOLPOSAM = 'libsolposAM.dylib'
     SPECTRL2 = 'libspectrl2.dylib'
-
 SOLPOSAMDLL = os.path.join(_DIRNAME, PLATFORM, SOLPOSAM)
 SPECTRL2DLL = os.path.join(_DIRNAME, PLATFORM, SPECTRL2)
 
 
-def _int2bits(x):
+def _int2bits(err_code):
     """
     Convert integer to bits.
 
     :param x: integer to convert
     :returns: log(x, 2)
     """
-    return int(math.log(x, 2))
+    return int(math.log(err_code, 2))
 
 
 def solposAM(location, datetime, weather):
@@ -63,11 +60,11 @@ def solposAM(location, datetime, weather):
     :type weather: list of floats
     :returns: angles, airmass
     :rtype: float
-    :raises: :exc:`~solar_utils.solar_utils_exceptions.SOLPOS_Error`
+    :raises: :exc:`~solar_utils.exceptions.SOLPOS_Error`
     """
     # load the DLL
-    solposAMdll = ctypes.cdll.LoadLibrary(SOLPOSAMDLL)
-    solposAM = solposAMdll.solposAM
+    solposAM_dll = ctypes.cdll.LoadLibrary(SOLPOSAMDLL)
+    _solposAM = solposAM_dll.solposAM
     # cast Python types as ctypes
     _location = (ctypes.c_float * 3)(*location)
     _datetime = (ctypes.c_int * 6)(*datetime)
@@ -79,14 +76,14 @@ def solposAM(location, datetime, weather):
     orientation = (ctypes.c_float * 2)()
     shadowband = (ctypes.c_float * 3)()
     # call DLL
-    code = solposAM(_location, _datetime, _weather, angles, airmass, settings,
-                    orientation, shadowband)
+    err_code = _solposAM(_location, _datetime, _weather, angles, airmass,
+                         settings, orientation, shadowband)
     # return results if successful, otherwise raise SOLPOS_Error
-    if code == 0:
+    if err_code == 0:
         return angles, airmass
     else:
-        # convert code to bits
-        _code = _int2bits(code)
+        # convert err_code to bits
+        _code = _int2bits(err_code)
         data = {'location': location,
                 'datetime': datetime,
                 'weather': weather,
@@ -99,7 +96,7 @@ def solposAM(location, datetime, weather):
 
 
 def spectrl2(units, location, datetime, weather, orientation,
-             atmosphericConditions, albedo):
+             atmospheric_conditions, albedo):
     """
     Calculate solar spectrum by calling functions exported by
     :data:`SPECTRL2DLL`.
@@ -114,14 +111,14 @@ def spectrl2(units, location, datetime, weather, orientation,
     :type weather: list of floats
     :param orientation: tilt and aspect [degrees]
     :type orientation: list of floats
-    :param atmosphericConditions: alpha, assym, ozone, tau500 and watvap
-    :type atmosphericConditions: list of floats
+    :param atmospheric_conditions: alpha, assym, ozone, tau500 and watvap
+    :type atmospheric_conditions: list of floats
     :param albedo: 6 wavelengths and 6 reflectivities
     :type albedo: list of lists of floats
     :returns: specdif, specdir, specetr, specglo and specx
     :rtype: float
-    :raises: :exc:`~solar_utils.solar_utils_exceptions.SPECTRL2_Error`,
-        :exc:`~solar_utils.solar_utils_exceptions.SOLPOS_Error`
+    :raises: :exc:`~solar_utils.exceptions.SPECTRL2_Error`,
+        :exc:`~solar_utils.exceptions.SOLPOS_Error`
 
     .. seealso::
         :func:`solposAM`
@@ -133,23 +130,22 @@ def spectrl2(units, location, datetime, weather, orientation,
     >>> datetime = [1999, 7, 22, 9, 45, 37]
     >>> weather = [1006.0, 27.0]
     >>> orientation = [33.65, 135.0]
-    >>> atmosphericConditions = [1.14, 0.65, -1.0, 0.2, 1.36]
+    >>> atmospheric_conditions = [1.14, 0.65, -1.0, 0.2, 1.36]
     >>> albedo = [0.3, 0.7, 0.8, 1.3, 2.5, 4.0] + ([0.2] * 6)
     >>> (specdif, specdir, specetr, specglo,
          specx) = spectrl2(units, location, datetime, weather, orientation,
-                           atmosphericConditions, albedo)
+                           atmospheric_conditions, albedo)
     """
-    # requires 'solpos.dll'
     # load the DLL
-    ctypes.cdll.LoadLibrary(SOLPOSAMDLL)
-    spectrl2DLL = ctypes.cdll.LoadLibrary(SPECTRL2DLL)
-    spectrl2 = spectrl2DLL.spectrl2
+    ctypes.cdll.LoadLibrary(SOLPOSAMDLL)  # requires 'solpos.dll'
+    spectrl2_dll = ctypes.cdll.LoadLibrary(SPECTRL2DLL)
+    _spectrl2 = spectrl2_dll.spectrl2
     # cast Python types as ctypes
     _location = (ctypes.c_float * 3)(*location)
     _datetime = (ctypes.c_int * 6)(*datetime)
     _weather = (ctypes.c_float * 2)(*weather)
     _orientation = (ctypes.c_float * 2)(*orientation)
-    _atmosphericConditions = (ctypes.c_float * 5)(*atmosphericConditions)
+    _atmospheric_conditions = (ctypes.c_float * 5)(*atmospheric_conditions)
     _albedo = (ctypes.c_float * 12)(*albedo)
     # allocate space for results
     specdif = (ctypes.c_float * 122)()
@@ -162,21 +158,23 @@ def spectrl2(units, location, datetime, weather, orientation,
     settings = (ctypes.c_int * 2)()
     shadowband = (ctypes.c_float * 3)()
     # call DLL
-    code = spectrl2(units, _location, _datetime, _weather, _orientation,
-                    _atmosphericConditions, _albedo, specdif, specdir, specetr,
-                    specglo, specx, angles, airmass, settings, shadowband)
+    err_code = _spectrl2(
+        units, _location, _datetime, _weather, _orientation,
+        _atmospheric_conditions, _albedo, specdif, specdir, specetr, specglo,
+        specx, angles, airmass, settings, shadowband
+    )
     # return results if successful, otherwise raise exception
-    if code == 0:
+    if err_code == 0:
         return specdif, specdir, specetr, specglo, specx
-    elif code < 0:
+    elif err_code < 0:
         data = {'units': units,
-                'tau500': atmosphericConditions[3],
-                'watvap': atmosphericConditions[4],
-                'assym': atmosphericConditions[1]}
-        raise SPECTRL2_Error(code, data)
+                'tau500': atmospheric_conditions[3],
+                'watvap': atmospheric_conditions[4],
+                'assym': atmospheric_conditions[1]}
+        raise SPECTRL2_Error(err_code, data)
     else:
-        # convert code to bits
-        _code = _int2bits(code)
+        # convert err_code to bits
+        _code = _int2bits(err_code)
         data = {'location': location,
                 'datetime': datetime,
                 'weather': weather,

@@ -4,65 +4,106 @@
 
 import sys
 import os
+import shutil
 try:
     from setuptools import setup, distutils
 except ImportError:
     sys.exit('setuptools was not detected - please install setuptools and pip')
 from solar_utils import __version__ as VERSION, __name__ as NAME
+from solar_utils.tests import test_cdlls
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-
+LOGGER = logging.getLogger(__name__)
+# set platform constants
+CCFLAGS, RPATH, INSTALL_NAME, LDFLAGS = None, None, None, None
 PLATFORM = sys.platform
 if PLATFORM == 'win32':
     SRC_DIR = 'win32'
+    LIB_FILE = '%s.dll'
 elif PLATFORM == 'darwin':
     SRC_DIR = 'darwin'
+    LIB_FILE = 'lib%s.dylib'
+    RPATH = "-Wl,-rpath,@loader_path/"
+    INSTALL_NAME = "-install_name @rpath/" + LIB_FILE
+    CCFLAGS = ['-fPIC']
 elif PLATFORM == 'linux2':
     SRC_DIR = 'linux'
+    LIB_FILE = 'lib%s.so'
+    RPATH = "-Wl,-rpath=${ORIGIN}"
+    CCFLAGS = ['-fPIC']
 else:
     sys.exit('unknown platform - expected "win32", "darwin" or "linux2"')
+
+
+def make_ldflags(lib_name, rpath=RPATH, install_name=INSTALL_NAME):
+    """
+    Make LDFLAGS with rpath, install_name and lib_name.
+    """
+    ldflags = None
+    if rpath:
+        ldflags = [rpath]
+        if install_name:
+            ldflags.append(install_name % lib_name)
+    return ldflags
+
 
 PKG_DATA = [os.path.join(SRC_DIR, '*.*'), os.path.join(SRC_DIR, 'src', '*.*')]
 LIB_DIR = os.path.join(NAME, SRC_DIR)
 SRC_DIR = os.path.join(LIB_DIR, 'src')
-logger.debug(PKG_DATA)
+BUILD_DIR = os.path.join(LIB_DIR, 'build')
 TESTS = '%s.tests' % NAME
 TEST_DATA = ['test_spectrl2_data.json']
 SOLPOS = 'solpos.c'
 SOLPOSAM = 'solposAM.c'
 SOLPOSAM_LIB = 'solposAM'
+SOLPOSAM_LIB_FILE = LIB_FILE % SOLPOSAM_LIB
 SPECTRL2 = 'spectrl2.c'
 SPECTRL2_2 = 'spectrl2_2.c'
 SPECTRL2_LIB = 'spectrl2'
+SPECTRL2_LIB_FILE = LIB_FILE % SPECTRL2_LIB
 SOLPOS = os.path.join(SRC_DIR, SOLPOS)
 SOLPOSAM = os.path.join(SRC_DIR, SOLPOSAM)
 SPECTRL2 = os.path.join(SRC_DIR, SPECTRL2)
 SPECTRL2_2 = os.path.join(SRC_DIR, SPECTRL2_2)
-LIB_FILES = ['%s.dll', '%s.lib', '%s.exp', 'lib%s.so', 'lib%s.dylib', 'lib%s.a']
-if 'clean' in sys.argv or 'distclean' in sys.argv:
-    for lib_file in LIB_FILES:
-        try:
-            os.remove(os.path.join(LIB_DIR, lib_file % SOLPOSAM_LIB))
-        except OSError as err:
-            sys.stderr.write(err.message)
-        try:
-            os.remove(os.path.join(LIB_DIR, lib_file % SPECTRL2_LIB))
-        except OSError as err:
-            sys.stderr.write(err.message)
-else:
+LIB_FILES_EXIST = all([
+    os.path.exists(os.path.join(LIB_DIR, SOLPOSAM_LIB_FILE)),
+    os.path.exists(os.path.join(LIB_DIR, SPECTRL2_LIB_FILE))
+])
+
+# build libraries if they don't exist
+if not LIB_FILES_EXIST:
+    # clean build directory
+    if os.path.exists(BUILD_DIR):
+        shutil.rmtree(BUILD_DIR)  # delete entire directory tree
+    os.mkdir(BUILD_DIR)  # make build directory
     # compile NREL source code
     CC = distutils.ccompiler.new_compiler()  # initialize compiler object
     CC.set_include_dirs([SRC_DIR])  # set includes directory
-    OBJS = CC.compile([SOLPOS, SOLPOSAM])  # compile solpos and solposAM objects
-    # link objects and make shared library in library directory
-    CC.link_shared_lib(OBJS, SOLPOSAM_LIB, output_dir=LIB_DIR)
-    OBJS = CC.compile([SPECTRL2, SPECTRL2_2, SOLPOS])  # compile spectrl2 objects
+    # compile solpos and solposAM objects into build directory
+    OBJS = CC.compile([SOLPOS, SOLPOSAM], output_dir=BUILD_DIR,
+                      extra_preargs=CCFLAGS)
+    # link objects and make shared library in build directory
+    LDFLAGS = make_ldflags(SOLPOSAM_LIB)  # make linker option flags for compiler
+    LOGGER.debug('%s LDFLAGS: %r', SPECTRL2_LIB, LDFLAGS)
+    CC.link_shared_lib(OBJS, SOLPOSAM_LIB, output_dir=BUILD_DIR,
+                       extra_preargs=LDFLAGS)
+    # compile spectrl2 objects into build directory
+    OBJS = CC.compile([SPECTRL2, SPECTRL2_2, SOLPOS], output_dir=BUILD_DIR,
+                      extra_preargs=CCFLAGS)
     CC.set_libraries([SOLPOSAM_LIB])  # set linked libraries
-    CC.set_library_dirs([LIB_DIR])  # set library directories
-    # link objects and make shared library in library directory
-    CC.link_shared_lib(OBJS, SPECTRL2_LIB, output_dir=LIB_DIR)
+    CC.set_library_dirs([BUILD_DIR])  # set library directories
+    # link objects and make shared library in build directory
+    LDFLAGS = make_ldflags(SPECTRL2_LIB)  # make linker option flags for compiler
+    LOGGER.debug('%s LDFLAGS: %r', SPECTRL2_LIB, LDFLAGS)
+    CC.link_shared_lib(OBJS, SPECTRL2_LIB, output_dir=BUILD_DIR,
+                       extra_preargs=LDFLAGS)
+    # copy files from build to library folder
+    shutil.copy(os.path.join(BUILD_DIR, SOLPOSAM_LIB_FILE), LIB_DIR)
+    shutil.copy(os.path.join(BUILD_DIR, SPECTRL2_LIB_FILE), LIB_DIR)
+# test libraries
+test_cdlls.test_solposAM()
+test_cdlls.test_spectrl2()
 
 setup(name=NAME,
       version=VERSION,

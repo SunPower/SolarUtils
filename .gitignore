@@ -7,7 +7,9 @@ solar_utils.egg-info/
 *.so
 *.dll
 *.exp
+*.def
 *.obj
+*.o
 *.lib
 *.a
 *.dll.manifest

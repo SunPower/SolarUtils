@@ -21,18 +21,18 @@ import sys
 from solar_utils.exceptions import SOLPOS_Error, SPECTRL2_Error
 
 _DIRNAME = os.path.dirname(__file__)
-if sys.platform == 'win32':
-    PLATFORM = sys.platform
+PLATFORM = sys.platform
+if PLATFORM == 'win32':
     SOLPOSAM = 'solposAM.dll'
     SPECTRL2 = 'spectrl2.dll'
-elif sys.platform.startswith('linux'):
-    PLATFORM = 'linux'
+elif PLATFORM == 'linux2':
     SOLPOSAM = 'libsolposAM.so'
     SPECTRL2 = 'libspectrl2.so'
-elif sys.platform.startswith('darwin'):
-    PLATFORM = 'darwin'
+elif PLATFORM == 'darwin':
     SOLPOSAM = 'libsolposAM.dylib'
     SPECTRL2 = 'libspectrl2.dylib'
+else:
+    raise OSError('Platform %s is unknown' % PLATFORM)
 SOLPOSAMDLL = os.path.join(_DIRNAME, PLATFORM, SOLPOSAM)
 SPECTRL2DLL = os.path.join(_DIRNAME, PLATFORM, SPECTRL2)
 

@@ -6,7 +6,7 @@ import sys
 import os
 import shutil
 try:
-    from setuptools import setup, distutils
+    from setuptools import setup, distutils, Extension
 except ImportError:
     sys.exit('setuptools was not detected - please install setuptools and pip')
 from solar_utils import __version__ as VERSION, __name__ as NAME
@@ -16,16 +16,13 @@ from solar_utils.tests import test_cdlls
 CCFLAGS, RPATH, INSTALL_NAME = None, None, None
 PLATFORM = sys.platform
 if PLATFORM == 'win32':
-    SRC_DIR = 'win32'
     LIB_FILE = '%s.dll'
 elif PLATFORM == 'darwin':
-    SRC_DIR = 'darwin'
     LIB_FILE = 'lib%s.dylib'
     RPATH = "-Wl,-rpath,@loader_path/"
     INSTALL_NAME = "-install_name @rpath/" + LIB_FILE
     CCFLAGS = ['-fPIC']
 elif PLATFORM == 'linux2':
-    SRC_DIR = 'linux'
     LIB_FILE = 'lib%s.so'
     RPATH = "-Wl,-rpath=${ORIGIN}"
     CCFLAGS = ['-fPIC']
@@ -45,8 +42,10 @@ def make_ldflags(lib_name, rpath=RPATH, install_name=INSTALL_NAME):
     return ldflags
 
 
-PKG_DATA = [os.path.join(SRC_DIR, '*.*'), os.path.join(SRC_DIR, 'src', '*.*')]
-LIB_DIR = os.path.join(NAME, SRC_DIR)
+# use dummy to get correct platform metadata
+PKG_DATA = []
+DUMMY = Extension('%s.dummy' % NAME, sources=[os.path.join(NAME, 'dummy.c')])
+LIB_DIR = os.path.join(NAME, PLATFORM)
 SRC_DIR = os.path.join(LIB_DIR, 'src')
 BUILD_DIR = os.path.join(LIB_DIR, 'build')
 TESTS = '%s.tests' % NAME
@@ -75,7 +74,15 @@ if 'clean' in sys.argv:
         os.remove(os.path.join(LIB_DIR, SPECTRL2_LIB_FILE))
     except OSError as err:
         sys.stderr.write('%s\n' % err)
+elif 'sdist' in sys.argv:
+    for plat in ('win32', 'linux2', 'darwin'):
+        PKG_DATA.append(os.path.join(plat, '*.*'))
+        PKG_DATA.append(os.path.join(plat, 'Makefile'))
+        PKG_DATA.append(os.path.join(plat, 'src', '*.*'))
 elif not LIB_FILES_EXIST:
+    PKG_DATA = [os.path.join(PLATFORM, '*.*'),
+                os.path.join(PLATFORM, 'Makefile'),
+                os.path.join(PLATFORM, 'src', '*.*')]
     # clean build directory
     if os.path.exists(BUILD_DIR):
         shutil.rmtree(BUILD_DIR)  # delete entire directory tree
@@ -108,4 +115,5 @@ setup(name=NAME,
       version=VERSION,
       packages=[NAME, TESTS],
       package_data={NAME: PKG_DATA, TESTS: TEST_DATA},
-      description='Python wrapper around NREL SOLPOS and SPECTRL2')
+      description='Python wrapper around NREL SOLPOS and SPECTRL2',
+      ext_modules=[DUMMY])

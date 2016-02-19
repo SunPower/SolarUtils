@@ -25,7 +25,7 @@ PLATFORM = sys.platform
 if PLATFORM == 'win32':
     SOLPOSAM = 'solposAM.dll'
     SPECTRL2 = 'spectrl2.dll'
-elif PLATFORM == 'linux2':
+elif PLATFORM in ['linux2', 'linux']:
     SOLPOSAM = 'libsolposAM.so'
     SPECTRL2 = 'libspectrl2.so'
 elif PLATFORM == 'darwin':

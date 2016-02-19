@@ -22,7 +22,7 @@ elif PLATFORM == 'darwin':
     RPATH = "-Wl,-rpath,@loader_path/"
     INSTALL_NAME = "-install_name @rpath/" + LIB_FILE
     CCFLAGS = ['-fPIC']
-elif PLATFORM == 'linux2':
+elif PLATFORM in ['linux', 'linux2']:
     LIB_FILE = 'lib%s.so'
     RPATH = "-Wl,-rpath=${ORIGIN}"
     CCFLAGS = ['-fPIC']

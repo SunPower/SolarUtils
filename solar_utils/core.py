@@ -26,13 +26,14 @@ if PLATFORM == 'win32':
     SOLPOSAM = 'solposAM.dll'
     SPECTRL2 = 'spectrl2.dll'
 elif PLATFORM in ['linux2', 'linux']:
+    PLATFORM = 'linux'
     SOLPOSAM = 'libsolposAM.so'
     SPECTRL2 = 'libspectrl2.so'
 elif PLATFORM == 'darwin':
     SOLPOSAM = 'libsolposAM.dylib'
     SPECTRL2 = 'libspectrl2.dylib'
 else:
-    raise OSError('Platform %s is unknown' % PLATFORM)
+    raise OSError('Platform "%s" is unknown or unsupported.' % PLATFORM)
 SOLPOSAMDLL = os.path.join(_DIRNAME, PLATFORM, SOLPOSAM)
 SPECTRL2DLL = os.path.join(_DIRNAME, PLATFORM, SPECTRL2)
 

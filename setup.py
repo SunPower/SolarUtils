@@ -23,11 +23,12 @@ elif PLATFORM == 'darwin':
     INSTALL_NAME = "-install_name @rpath/" + LIB_FILE
     CCFLAGS = ['-fPIC']
 elif PLATFORM in ['linux', 'linux2']:
+    PLATFORM = 'linux'
     LIB_FILE = 'lib%s.so'
     RPATH = "-Wl,-rpath=${ORIGIN}"
     CCFLAGS = ['-fPIC']
 else:
-    sys.exit('unknown platform - expected "win32", "darwin" or "linux2"')
+    sys.exit('Platform "%s" is unknown or unsupported.' % PLATFORM)
 
 
 def make_ldflags(lib_name, rpath=RPATH, install_name=INSTALL_NAME):

@@ -33,17 +33,17 @@ create_dirs:
 solposAM: create_dirs
     @echo.
     @echo Compiling $(SOLPOSAM) ...
-    cl /LD /Wall /showIncludes /Fo$(BUILD_DIR)\ /Fe$(BUILD_DIR)\$(SOLPOSAM) \
-        $(SOLPOSAM_SRC) > $(SOLPOSAM_LOG) 2>&1
+    cl /LD /Wall /showIncludes /Ox /MD /GS- /Fo$(BUILD_DIR)\ \
+        /Fe$(BUILD_DIR)\$(SOLPOSAM) $(SOLPOSAM_SRC) > $(SOLPOSAM_LOG) 2>&1
 
 spectrl2: create_dirs
     @echo.
     @echo Compiling $(SPECTRL2) ...
     @if not exist $(BUILD_DIR)\$(SOLPOSAM_LIB) \
     	echo *** Missing $(BUILD_DIR)\$(SOLPOSAM_LIB) ***
-    cl /LD /Wall /showIncludes /Fo$(BUILD_DIR)\ /Fe$(BUILD_DIR)\$(SPECTRL2) \
-        $(SPECTRL2_SRC) /link $(BUILD_DIR)\$(SOLPOSAM_LIB) > $(SPECTRL2_LOG) \
-        2>&1
+    cl /LD /Wall /showIncludes /Ox /MD /GS- /Fo$(BUILD_DIR)\ \
+        /Fe$(BUILD_DIR)\$(SPECTRL2) $(SPECTRL2_SRC) \
+        /link $(BUILD_DIR)\$(SOLPOSAM_LIB) > $(SPECTRL2_LOG) 2>&1
 
 install:
     @echo.

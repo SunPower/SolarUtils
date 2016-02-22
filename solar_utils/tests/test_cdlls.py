@@ -25,7 +25,7 @@ from solar_utils.exceptions import SOLPOS_Error, SPECTRL2_Error
 _DIRNAME = os.path.dirname(__file__)
 TOL = 1E-3
 
-RELDIFF = lambda (x, x0): np.abs(x - x0) / x0
+RELDIFF = lambda x, x0: np.abs(x - x0) / x0
 
 
 def test_solposAM():
@@ -41,10 +41,10 @@ def test_solposAM():
     # call test function
     angles, airmass = solposAM(location, datetime, weather)
     # test OUTPUTS are within TOL
-    ok_(RELDIFF((angles[0], test_data['angles'][0])) < TOL)
-    ok_(RELDIFF((angles[1], test_data['angles'][1])) < TOL)
-    ok_(RELDIFF((airmass[0], test_data['airmass'][0])) < TOL)
-    ok_(RELDIFF((airmass[1], test_data['airmass'][1])) < TOL)
+    ok_(RELDIFF(angles[0], test_data['angles'][0]) < TOL)
+    ok_(RELDIFF(angles[1], test_data['angles'][1]) < TOL)
+    ok_(RELDIFF(airmass[0], test_data['airmass'][0]) < TOL)
+    ok_(RELDIFF(airmass[1], test_data['airmass'][1]) < TOL)
     # test errors - YEAR
     datetime = [2051, 6, 5, 12, 31, 0]
     try:
@@ -109,11 +109,11 @@ def test_spectrl2():
     _specglo = np.ctypeslib.as_array(specglo)
     _specx = np.ctypeslib.as_array(specx)
     # test OUTPUT are within TOL
-    assert np.all(RELDIFF((_specdif, test_data['specdif'])) < TOL)
-    assert np.all(RELDIFF((_specdir, test_data['specdir'])) < TOL)
-    assert np.all(RELDIFF((_specetr, test_data['specetr'])) < TOL)
-    assert np.all(RELDIFF((_specglo, test_data['specglo'])) < TOL)
-    assert np.all(RELDIFF((_specx, test_data['specx'])) < TOL)
+    assert np.all(RELDIFF(_specdif, test_data['specdif']) < TOL)
+    assert np.all(RELDIFF(_specdir, test_data['specdir']) < TOL)
+    assert np.all(RELDIFF(_specetr, test_data['specetr']) < TOL)
+    assert np.all(RELDIFF(_specglo, test_data['specglo']) < TOL)
+    assert np.all(RELDIFF(_specx, test_data['specx']) < TOL)
     # raise a SPECTRL2_Error - UNITS
     try:
         spectrl2(3, location, datetime, weather, orientation,

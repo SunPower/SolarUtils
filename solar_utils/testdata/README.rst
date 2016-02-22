@@ -11,5 +11,5 @@ files are in the build folder.
 
 Links
 -----
-`RReDC Solar Models- spectrl2<http://rredc.nrel.gov/solar/models/spectral/spectrl2/>`_
-`Solar Codes & Algorithms- Solpos<http://rredc.nrel.gov/solar/codesandalgorithms/solpos/>`_
+`RReDC Solar Models - spectrl2 <http://rredc.nrel.gov/solar/models/spectral/spectrl2/>`_
+`Solar Codes & Algorithms - Solpos <http://rredc.nrel.gov/solar/codesandalgorithms/solpos/>`_

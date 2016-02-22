@@ -19,20 +19,24 @@ LOGGER = logging.getLogger('SETUP')
 
 # set platform constants
 CCFLAGS, RPATH, INSTALL_NAME, LDFLAGS = None, None, None, None
+PYVERSION = sys.version_info
 PLATFORM = sys.platform
 if PLATFORM == 'win32':
     LIB_FILE = '%s.dll'
+    if PYVERSION.major >= 3 and PYVERSION.minor >= 5:
+        LDFLAGS = ['/DLL']
 elif PLATFORM == 'darwin':
     LIB_FILE = 'lib%s.dylib'
     RPATH = "-Wl,-rpath,@loader_path/"
     INSTALL_NAME = "@rpath/" + LIB_FILE
     CCFLAGS = LDFLAGS = ['-fPIC']
-elif PLATFORM == 'linux2':
+elif PLATFORM in ['linux', 'linux2']:
+    PLATFORM = 'linux'
     LIB_FILE = 'lib%s.so'
     RPATH = "-Wl,-rpath=${ORIGIN}"
     CCFLAGS = LDFLAGS = ['-fPIC']
 else:
-    sys.exit('unknown platform - expected "win32", "darwin" or "linux2"')
+    sys.exit('Platform "%s" is unknown or unsupported.' % PLATFORM)
 
 
 def make_ldflags(ldflags=LDFLAGS, rpath=RPATH):
@@ -115,7 +119,7 @@ elif not LIB_FILES_EXIST:
         CC = OSXCCOMPILER(verbose=3)
     else:
         CC = distutils.ccompiler.new_compiler()  # initialize compiler object
-    CC.set_include_dirs([SRC_DIR])  # set includes directory
+    CC.add_include_dir(SRC_DIR)  # set includes directory
     # compile solpos and solposAM objects into build directory
     OBJS = CC.compile([SOLPOS, SOLPOSAM], output_dir=BUILD_DIR,
                       extra_preargs=CCFLAGS)
@@ -126,8 +130,8 @@ elif not LIB_FILES_EXIST:
     # compile spectrl2 objects into build directory
     OBJS = CC.compile([SPECTRL2, SPECTRL2_2, SOLPOS], output_dir=BUILD_DIR,
                       extra_preargs=CCFLAGS)
-    CC.set_libraries([SOLPOSAM_LIB])  # set linked libraries
-    CC.set_library_dirs([BUILD_DIR])  # set library directories
+    CC.add_library(SOLPOSAM_LIB)  # set linked libraries
+    CC.add_library_dir(BUILD_DIR)  # set library directories
     # link objects and make shared library in build directory
     CC.link_shared_lib(OBJS, SPECTRL2_LIB, output_dir=BUILD_DIR,
                        extra_preargs=make_ldflags(),

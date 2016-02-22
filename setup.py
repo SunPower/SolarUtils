@@ -53,6 +53,16 @@ def make_ldflags(ldflags=LDFLAGS, rpath=RPATH):
     return ldflags
 
 
+def make_install_name(lib_name, install_name=INSTALL_NAME):
+    """
+    Make INSTALL_NAME with and lib_name.
+    """
+    if install_name:
+        return ['-install_name', install_name % lib_name]
+    else:
+        return None
+
+
 def dylib_monkeypatch(self):
     """
     Monkey patch :class:`distutils.UnixCCompiler` for darwin so libraries use
@@ -135,8 +145,7 @@ elif not LIB_FILES_EXIST:
     # link objects and make shared library in build directory
     CC.link_shared_lib(OBJS, SOLPOSAM_LIB, output_dir=BUILD_DIR,
                        extra_preargs=make_ldflags(),
-                       extra_postargs=['-install_name',
-                                       INSTALL_NAME % SOLPOSAM_LIB])
+                       extra_postargs=make_install_name(SOLPOSAM_LIB))
     # compile spectrl2 objects into build directory
     OBJS = CC.compile([SPECTRL2, SPECTRL2_2, SOLPOS], output_dir=BUILD_DIR,
                       extra_preargs=CCFLAGS)
@@ -145,8 +154,7 @@ elif not LIB_FILES_EXIST:
     # link objects and make shared library in build directory
     CC.link_shared_lib(OBJS, SPECTRL2_LIB, output_dir=BUILD_DIR,
                        extra_preargs=make_ldflags(),
-                       extra_postargs=['-install_name',
-                                       INSTALL_NAME % SPECTRL2_LIB])
+                       extra_postargs=make_install_name(SPECTRL2_LIB))
     # copy files from build to library folder
     shutil.copy(os.path.join(BUILD_DIR, SOLPOSAM_LIB_FILE), LIB_DIR)
     shutil.copy(os.path.join(BUILD_DIR, SPECTRL2_LIB_FILE), LIB_DIR)

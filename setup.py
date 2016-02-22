@@ -13,10 +13,13 @@ from solar_utils import __version__ as VERSION, __name__ as NAME
 from solar_utils.tests import test_cdlls
 
 # set platform constants
-CCFLAGS, RPATH, INSTALL_NAME = None, None, None
+CCFLAGS, RPATH, INSTALL_NAME, LDFLAGS = None, None, None, None
+PYVERSION = sys.version_info
 PLATFORM = sys.platform
 if PLATFORM == 'win32':
     LIB_FILE = '%s.dll'
+    if PYVERSION.major >= 3 and PYVERSION.minor >= 5:
+        LDFLAGS = ['/DLL']
 elif PLATFORM == 'darwin':
     LIB_FILE = 'lib%s.dylib'
     RPATH = "-Wl,-rpath,@loader_path/"
@@ -31,13 +34,16 @@ else:
     sys.exit('Platform "%s" is unknown or unsupported.' % PLATFORM)
 
 
-def make_ldflags(lib_name, rpath=RPATH, install_name=INSTALL_NAME):
+def make_ldflags(lib_name, ldflags=LDFLAGS, rpath=RPATH, install_name=INSTALL_NAME):
     """
     Make LDFLAGS with rpath, install_name and lib_name.
     """
-    ldflags = None
+    if ldflags is not None:
+        ldflags = LDFLAGS
+    else:
+        ldflags = []
     if rpath:
-        ldflags = [rpath]
+        ldflags.append(rpath)
         if install_name:
             ldflags.append(install_name % lib_name)
     return ldflags
@@ -90,7 +96,7 @@ elif not LIB_FILES_EXIST:
     os.mkdir(BUILD_DIR)  # make build directory
     # compile NREL source code
     CC = distutils.ccompiler.new_compiler()  # initialize compiler object
-    CC.set_include_dirs([SRC_DIR])  # set includes directory
+    CC.add_include_dir(SRC_DIR)  # set includes directory
     # compile solpos and solposAM objects into build directory
     OBJS = CC.compile([SOLPOS, SOLPOSAM], output_dir=BUILD_DIR,
                       extra_preargs=CCFLAGS)
@@ -100,8 +106,8 @@ elif not LIB_FILES_EXIST:
     # compile spectrl2 objects into build directory
     OBJS = CC.compile([SPECTRL2, SPECTRL2_2, SOLPOS], output_dir=BUILD_DIR,
                       extra_preargs=CCFLAGS)
-    CC.set_libraries([SOLPOSAM_LIB])  # set linked libraries
-    CC.set_library_dirs([BUILD_DIR])  # set library directories
+    CC.add_library(SOLPOSAM_LIB)  # set linked libraries
+    CC.add_library_dir(BUILD_DIR)  # set library directories
     # link objects and make shared library in build directory
     CC.link_shared_lib(OBJS, SPECTRL2_LIB, output_dir=BUILD_DIR,
                        extra_preargs=make_ldflags(SPECTRL2_LIB))

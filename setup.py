@@ -1,6 +1,9 @@
-# Copyright (c) 2014 SunPower Corp.
-# Mark Mikofski
-# 2016-02-10
+"""
+SolarUtils Package Setup
+Copyright (c) 2016 SunPower Corp.
+Confidential & Proprietary
+Do Not Distribute
+"""
 
 import sys
 import os
@@ -50,21 +53,27 @@ def make_ldflags(ldflags=LDFLAGS, rpath=RPATH):
     return ldflags
 
 
-def dylib_monkeypatch(cc):
-    def link_dylib_lib(cc, objects, output_libname, output_dir=None,
-                        libraries=None, library_dirs=None,
-                        runtime_library_dirs=None, export_symbols=None,
-                        debug=0, extra_preargs=None, extra_postargs=None,
-                        build_temp=None, target_lang=None):
-        cc.link("shared_library", objects,
-                  cc.library_filename(output_libname, lib_type='dylib'),
+def dylib_monkeypatch(self):
+    """
+    Monkey patch :class:`distutils.UnixCCompiler` for darwin so libraries use
+    '.dylib' instead of '.so'.
+
+    """
+    def link_dylib_lib(self, objects, output_libname, output_dir=None,
+                       libraries=None, library_dirs=None,
+                       runtime_library_dirs=None, export_symbols=None,
+                       debug=0, extra_preargs=None, extra_postargs=None,
+                       build_temp=None, target_lang=None):
+        """implementation of link_shared_lib"""
+        self.link("shared_library", objects,
+                  self.library_filename(output_libname, lib_type='dylib'),
                   output_dir,
                   libraries, library_dirs, runtime_library_dirs,
                   export_symbols, debug,
                   extra_preargs, extra_postargs, build_temp, target_lang)
-    cc.link_so = cc.link_shared_lib
-    cc.link_shared_lib = link_dylib_lib
-    return cc
+    self.link_so = self.link_shared_lib
+    self.link_shared_lib = link_dylib_lib
+    return self
 
 
 # use dummy to get correct platform metadata
@@ -126,7 +135,8 @@ elif not LIB_FILES_EXIST:
     # link objects and make shared library in build directory
     CC.link_shared_lib(OBJS, SOLPOSAM_LIB, output_dir=BUILD_DIR,
                        extra_preargs=make_ldflags(),
-                       extra_postargs=['-install_name',INSTALL_NAME % SOLPOSAM_LIB])
+                       extra_postargs=['-install_name',
+                                       INSTALL_NAME % SOLPOSAM_LIB])
     # compile spectrl2 objects into build directory
     OBJS = CC.compile([SPECTRL2, SPECTRL2_2, SOLPOS], output_dir=BUILD_DIR,
                       extra_preargs=CCFLAGS)
@@ -135,7 +145,8 @@ elif not LIB_FILES_EXIST:
     # link objects and make shared library in build directory
     CC.link_shared_lib(OBJS, SPECTRL2_LIB, output_dir=BUILD_DIR,
                        extra_preargs=make_ldflags(),
-                       extra_postargs=['-install_name',INSTALL_NAME % SPECTRL2_LIB])
+                       extra_postargs=['-install_name',
+                                       INSTALL_NAME % SPECTRL2_LIB])
     # copy files from build to library folder
     shutil.copy(os.path.join(BUILD_DIR, SOLPOSAM_LIB_FILE), LIB_DIR)
     shutil.copy(os.path.join(BUILD_DIR, SPECTRL2_LIB_FILE), LIB_DIR)

@@ -53,7 +53,7 @@ def solposAM(location, datetime, weather):
     Calculate solar position and air mass by calling functions exported by
     :data:`SOLPOSAMDLL`.
 
-    :param location: [longitude, latitude, UTC-timezone]
+    :param location: [latitude, longitude, UTC-timezone]
     :type location: list of floats
     :param datetime: [year, month, day, hour, minute, second]
     :type datetime: list of ints
@@ -62,6 +62,17 @@ def solposAM(location, datetime, weather):
     :returns: angles, airmass
     :rtype: float
     :raises: :exc:`~solar_utils.exceptions.SOLPOS_Error`
+
+    **Examples:**
+
+    >>> location = [35.56836, -119.2022, -8.0]
+    >>> datetime = [2013, 6, 5, 12, 31, 0]
+    >>> weather = [1015.62055, 40.0]
+    >>> (angles, airmass) = solposAM(location, datetime, weather)
+    >>> list(angles)
+    [15.074043273925781, 213.29042053222656]
+    >>> list(airmass)
+    [1.0352272987365723, 1.0379053354263306]
     """
     # load the DLL
     solposAM_dll = ctypes.cdll.LoadLibrary(SOLPOSAMDLL)
@@ -104,7 +115,7 @@ def spectrl2(units, location, datetime, weather, orientation,
 
     :param units: set ``units`` = 1 for W/m\ :sup:`2`/micron
     :type units: int
-    :param location: longitude, latitude and UTC-timezone
+    :param location: latitude, longitude and UTC-timezone
     :type location: list of floats
     :param datetime: year, month, day, hour, minute and second
     :type datetime: list of ints

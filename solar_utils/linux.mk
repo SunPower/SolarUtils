@@ -2,6 +2,8 @@
 SOLPOSAM = libsolposAM.so
 SOLPOSAM_LIB = solposAM
 SPECTRL2 = libspectrl2.so
+SPECTEST = spectest
+STEST00 = stest00
 
 SRC_DIR = src
 BUILD_DIR = build
@@ -14,6 +16,18 @@ SPECTRL2_SRC = \
 	$(SRC_DIR)/spectrl2.c \
 	$(SRC_DIR)/spectrl2_2.c \
 	$(SRC_DIR)/solpos.c
+
+SPECTEST_SRC = \
+	$(SRC_DIR)/spectest.c \
+	$(SRC_DIR)/spectrl2_2.c \
+	$(SRC_DIR)/solpos.c
+
+STEST00_SRC = \
+	$(SRC_DIR)/stest00.c \
+	$(SRC_DIR)/solpos.c
+
+SOLPOSAM_LOG = $(BUILD_DIR)/solposAM.log
+SPECTRL2_LOG = $(BUILD_DIR)/spectrl2.log
 
 all: uninstall clean solposAM spectrl2 install test
 
@@ -37,8 +51,15 @@ install:
 uninstall:
 	rm -f $(SOLPOSAM) $(SPECTRL2)
 
-test:
-	nosetests --verbose ../tests
+spectest:
+	cc -fPIC -Wall $(SPECTEST_SRC) -o $(BUILD_DIR)/$(SPECTEST)
+
+stest00:
+	cc -fPIC -Wall $(STEST00_SRC) -o $(BUILD_DIR)/$(STEST00)
+
+test: spectest stest00
+	$(BUILD_DIR)/$(SPECTEST) >> SPECTRL2_LOG
+	$(BUILD_DIR)/$(STEST00) >> SOLPOSAM_LOG
 
 # https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html
 # -Wl,option

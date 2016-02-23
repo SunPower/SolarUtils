@@ -34,8 +34,8 @@ elif PLATFORM == 'darwin':
     SPECTRL2 = 'libspectrl2.dylib'
 else:
     raise OSError('Platform "%s" is unknown or unsupported.' % PLATFORM)
-SOLPOSAMDLL = os.path.join(_DIRNAME, PLATFORM, SOLPOSAM)
-SPECTRL2DLL = os.path.join(_DIRNAME, PLATFORM, SPECTRL2)
+SOLPOSAMDLL = os.path.join(_DIRNAME, SOLPOSAM)
+SPECTRL2DLL = os.path.join(_DIRNAME, SPECTRL2)
 
 
 def _int2bits(err_code):

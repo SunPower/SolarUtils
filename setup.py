@@ -21,11 +21,12 @@ logging.basicConfig(level=logging.DEBUG)
 LOGGER = logging.getLogger('SETUP')
 
 # set platform constants
-CCFLAGS, RPATH, INSTALL_NAME, LDFLAGS = None, None, None, None
+CCFLAGS, RPATH, INSTALL_NAME, LDFLAGS, MACROS = None, None, None, None, None
 PYVERSION = sys.version_info
 PLATFORM = sys.platform
 if PLATFORM == 'win32':
     LIB_FILE = '%s.dll'
+    MACROS = [('WIN32', None)]
     if PYVERSION.major >= 3 and PYVERSION.minor >= 5:
         LDFLAGS = ['/DLL']
 elif PLATFORM == 'darwin':
@@ -36,7 +37,7 @@ elif PLATFORM == 'darwin':
 elif PLATFORM in ['linux', 'linux2']:
     PLATFORM = 'linux'
     LIB_FILE = 'lib%s.so'
-    RPATH = "-Wl,-rpath=${ORIGIN}"
+    RPATH = "-Wl,-rpath,${ORIGIN}"
     CCFLAGS = LDFLAGS = ['-fPIC']
 else:
     sys.exit('Platform "%s" is unknown or unsupported.' % PLATFORM)
@@ -89,9 +90,8 @@ def dylib_monkeypatch(self):
 # use dummy to get correct platform metadata
 PKG_DATA = []
 DUMMY = Extension('%s.dummy' % NAME, sources=[os.path.join(NAME, 'dummy.c')])
-LIB_DIR = os.path.join(NAME, PLATFORM)
-SRC_DIR = os.path.join(LIB_DIR, 'src')
-BUILD_DIR = os.path.join(LIB_DIR, 'build')
+SRC_DIR = os.path.join(NAME, 'src')
+BUILD_DIR = os.path.join(NAME, 'build')
 TESTS = '%s.tests' % NAME
 TEST_DATA = ['test_spectrl2_data.json']
 SOLPOS = 'solpos.c'
@@ -106,27 +106,29 @@ SOLPOS = os.path.join(SRC_DIR, SOLPOS)
 SOLPOSAM = os.path.join(SRC_DIR, SOLPOSAM)
 SPECTRL2 = os.path.join(SRC_DIR, SPECTRL2)
 SPECTRL2_2 = os.path.join(SRC_DIR, SPECTRL2_2)
+SOLPOSAM_LIB_PATH = os.path.join(NAME, SOLPOSAM_LIB_FILE)
+SPECTRL2_LIB_PATH = os.path.join(NAME, SPECTRL2_LIB_FILE)
 LIB_FILES_EXIST = all([
-    os.path.exists(os.path.join(LIB_DIR, SOLPOSAM_LIB_FILE)),
-    os.path.exists(os.path.join(LIB_DIR, SPECTRL2_LIB_FILE))
+    os.path.exists(SOLPOSAM_LIB_PATH),
+    os.path.exists(SPECTRL2_LIB_PATH)
 ])
 
 # run clean or build libraries if they don't exist
 if 'clean' in sys.argv:
     try:
-        os.remove(os.path.join(LIB_DIR, SOLPOSAM_LIB_FILE))
-        os.remove(os.path.join(LIB_DIR, SPECTRL2_LIB_FILE))
+        os.remove(SOLPOSAM_LIB_PATH)
+        os.remove(SPECTRL2_LIB_PATH)
     except OSError as err:
         sys.stderr.write('%s\n' % err)
 elif 'sdist' in sys.argv:
-    for plat in ('win32', 'linux2', 'darwin'):
-        PKG_DATA.append(os.path.join(plat, '*.*'))
-        PKG_DATA.append(os.path.join(plat, 'Makefile'))
-        PKG_DATA.append(os.path.join(plat, 'src', '*.*'))
+    for plat in ('win32', 'linux', 'darwin'):
+        PKG_DATA.append(os.path.join(NAME, '%s.mk' % plat))
+    PKG_DATA.append(os.path.join(NAME, 'src', '*.*'))
+    PKG_DATA.append(os.path.join(NAME, 'src', 'orig', '*.*'))
 elif not LIB_FILES_EXIST:
-    PKG_DATA = [os.path.join(PLATFORM, '*.*'),
-                os.path.join(PLATFORM, 'Makefile'),
-                os.path.join(PLATFORM, 'src', '*.*')]
+    PKG_DATA = [os.path.join(NAME, '%s.mk' % PLATFORM),
+                os.path.join(NAME, 'src', '*.*'),
+                os.path.join(NAME, 'src', 'orig', '*.*')]
     # clean build directory
     if os.path.exists(BUILD_DIR):
         shutil.rmtree(BUILD_DIR)  # delete entire directory tree
@@ -141,14 +143,14 @@ elif not LIB_FILES_EXIST:
     CC.add_include_dir(SRC_DIR)  # set includes directory
     # compile solpos and solposAM objects into build directory
     OBJS = CC.compile([SOLPOS, SOLPOSAM], output_dir=BUILD_DIR,
-                      extra_preargs=CCFLAGS)
+                      extra_preargs=CCFLAGS, macros=MACROS)
     # link objects and make shared library in build directory
     CC.link_shared_lib(OBJS, SOLPOSAM_LIB, output_dir=BUILD_DIR,
                        extra_preargs=make_ldflags(),
                        extra_postargs=make_install_name(SOLPOSAM_LIB))
     # compile spectrl2 objects into build directory
     OBJS = CC.compile([SPECTRL2, SPECTRL2_2, SOLPOS], output_dir=BUILD_DIR,
-                      extra_preargs=CCFLAGS)
+                      extra_preargs=CCFLAGS, macros=MACROS)
     CC.add_library(SOLPOSAM_LIB)  # set linked libraries
     CC.add_library_dir(BUILD_DIR)  # set library directories
     # link objects and make shared library in build directory
@@ -156,8 +158,8 @@ elif not LIB_FILES_EXIST:
                        extra_preargs=make_ldflags(),
                        extra_postargs=make_install_name(SPECTRL2_LIB))
     # copy files from build to library folder
-    shutil.copy(os.path.join(BUILD_DIR, SOLPOSAM_LIB_FILE), LIB_DIR)
-    shutil.copy(os.path.join(BUILD_DIR, SPECTRL2_LIB_FILE), LIB_DIR)
+    shutil.copy(os.path.join(BUILD_DIR, SOLPOSAM_LIB_FILE), NAME)
+    shutil.copy(os.path.join(BUILD_DIR, SPECTRL2_LIB_FILE), NAME)
     # test libraries
     test_cdlls.test_solposAM()
     test_cdlls.test_spectrl2()

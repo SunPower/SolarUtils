@@ -9,7 +9,7 @@ Do Not Distribute
 
 from solar_utils.core import solposAM, spectrl2
 
-__version__ = '0.1.4'
-__release__ = 'Artists'
+__version__ = '0.2'
+__release__ = 'Bakers'
 __author__ = 'Mark Mikofski'
 __all__ = ['solposAM', 'spectrl2']

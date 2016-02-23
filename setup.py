@@ -122,13 +122,16 @@ if 'clean' in sys.argv:
         sys.stderr.write('%s\n' % err)
 elif 'sdist' in sys.argv:
     for plat in ('win32', 'linux', 'darwin'):
-        PKG_DATA.append(os.path.join(NAME, '%s.mk' % plat))
-    PKG_DATA.append(os.path.join(NAME, 'src', '*.*'))
-    PKG_DATA.append(os.path.join(NAME, 'src', 'orig', '*.*'))
+        PKG_DATA.append('%s.mk' % plat)
+    PKG_DATA.append(os.path.join('src', '*.*'))
+    PKG_DATA.append(os.path.join('src', 'orig', 'solpos', '*.*'))
+    PKG_DATA.append(os.path.join('src', 'orig', 'spectrl2', '*.*'))
 elif not LIB_FILES_EXIST:
-    PKG_DATA = [os.path.join(NAME, '%s.mk' % PLATFORM),
-                os.path.join(NAME, 'src', '*.*'),
-                os.path.join(NAME, 'src', 'orig', '*.*')]
+    PKG_DATA = ['%s.mk' % PLATFORM,
+                SOLPOSAM_LIB_FILE, SPECTRL2_LIB_FILE,
+                os.path.join('src', '*.*'),
+                os.path.join('src', 'orig', 'solpos', '*.*'),
+                os.path.join('src', 'orig', 'spectrl2', '*.*')]
     # clean build directory
     if os.path.exists(BUILD_DIR):
         shutil.rmtree(BUILD_DIR)  # delete entire directory tree

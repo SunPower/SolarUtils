@@ -2,7 +2,7 @@
 // Confidential & Proprietary
 // Do Not Distribute
 
-// include MS Visual C Runtime Library headers
+// include C Standard Library headers
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
@@ -12,15 +12,14 @@
 // other definitions and macros
 #include "solpos00.h"
 
-
 // define a macro for __declspec(dllexport) keyword instead of .def file
 #ifdef WIN32
-# define DllExport   __declspec( dllexport )
+#define DllExport   __declspec( dllexport )
 #else
-# define DllExport
+#define DllExport
 #endif
 
-// solposAM.dll
+// solposAM
 // Inputs:
 //      location: (float*) [longitude, latitude, UTC-timezone]
 //      datetime: (int*) [year, month, day, hour, minute, second]

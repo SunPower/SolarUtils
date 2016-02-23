@@ -6,9 +6,9 @@
 
 // define a macro for __declspec(dllexport) keyword instead of .def file
 #ifdef WIN32
-# define DllExport   __declspec( dllexport )
+#define DllExport   __declspec( dllexport )
 #else
-# define DllExport
+#define DllExport
 #endif
 
 DllExport long solposAM( float *location, int *datetime, float *weather,

@@ -1,15 +1,8 @@
-// spectrl2 exports spectrl2 as a dll
-//
-// Compile with Windows SDK 7.0
-// Note: spectrl2.c, solpos.c & solpos00.h must be in the same folder
-// Start the SDK shell in x64-release mode: SetEnv.Cmd /RELEASE /X64
-// In the sdk shell execute: cl.exe /LD spectrl2.c solpos.c
-//
 // 2013 Sunpower Corp.
 // Confidential & Proprietary
 // Do Not Distribute
 
-// include MS Visual C Runtime Library headers
+// include C Standard Library headers
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
@@ -20,15 +13,20 @@
 #include "spectrl2_2.h"
 
 // define a macro for __declspec(dllexport) keyword instead of .def file
+#ifdef WIN32
 #define DllExport   __declspec( dllexport )
 #define DllImport   __declspec( dllimport )
+#else
+#define DllExport
+#define DllImport
+#endif
 
-// import solposAM from dll
+// import solposAM
 DllImport long solposAM( float *location, int *datetime, float *weather,
     float *angles, float *airmass, int *settings, float *orientation,
     float *shadowband );
 
-// spectrl2.dll
+// spectrl2
 // Inputs:
 //      units: (int) output units: 1, 2 or 3
 //      location: (float*) [longitude, latitude, UTC-timezone]

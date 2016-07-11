@@ -5,12 +5,11 @@
 
 Welcome to SolarUtils's documentation!
 ======================================
-SolarUtils is a Python wrapper around the publicly available NREL SOLPOS and
-SPECTRL2 C-language computer programs that calculate solar position and spectral
-decomposition. Please read tha licenses provided with the source code. Usage of
-this software implies acceptance of the terms.
+.. include:: ../../README.rst
 
-Contents:
+.. image:: example.png
+
+.. include:: ../../CHANGES.rst
 
 .. toctree::
    :maxdepth: 2
@@ -18,12 +17,9 @@ Contents:
    core
    exceptions
 
-
-
 Indices and tables
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

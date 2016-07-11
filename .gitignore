@@ -3,7 +3,7 @@ venv/
 build/
 solar_utils/build/
 dist/
-solar_utils.egg-info/
+SolarUtils.egg-info/
 *.pyc
 *.dylib
 *.so

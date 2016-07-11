@@ -9,9 +9,9 @@ Libraries
 ---------
 Solar Utils depends on two libraries that must be compiled in the same folder as
 ``core.py``. The library extension depends on the system platform. Windows uses
-dynamically linked libraries, `.dll`, Linux uses shared objects, `.so` and Mac
-OS X (*aka Darwin*) uses dynamic libraries, `.dylib`. Also both Linux and Darwin
-libraries have `lib` prefixed to the library name.
+dynamically linked libraries, ``.dll``, Linux uses shared objects, ``.so`` and
+Mac OS X (*aka Darwin*) uses dynamic libraries, ``.dylib``. Also both Linux and
+Darwin libraries have ``lib`` prefixed to the library name.
 
 solposAM
 ++++++++

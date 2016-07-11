@@ -49,14 +49,17 @@ def solposAM(location, datetime, weather):
     :data:`SOLPOSAMDLL`.
 
     :param location: [latitude, longitude, UTC-timezone]
-    :type location: list of floats
+    :type location: float
     :param datetime: [year, month, day, hour, minute, second]
-    :type datetime: list of ints
+    :type datetime: int
     :param weather: [ambient-pressure (mB), ambient-temperature (C)]
-    :type weather: list of floats
+    :type weather: float
     :returns: angles, airmass
     :rtype: float
     :raises: :exc:`~solar_utils.exceptions.SOLPOS_Error`
+
+    The return values contain the solar zenith and azimuth angles in degrees,
+    and the relative and absolute (or pressure corrected) air mass.
 
     **Examples:**
 

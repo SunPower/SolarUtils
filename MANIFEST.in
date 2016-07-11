@@ -1,0 +1,8 @@
+include LICENSE
+include CHANGES.rst
+include solar_utils/docs/conf.py
+include solar_utils/docs/Makefile
+include solar_utils/docs/make.bat
+include solar_utils/docs/favicon.ico
+recursive-include solar_utils/docs *.png
+recursive-include solar_utils/docs *.rst

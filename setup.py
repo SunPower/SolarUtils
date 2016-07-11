@@ -13,12 +13,22 @@ try:
     from setuptools import setup, distutils, Extension
 except ImportError:
     sys.exit('setuptools was not detected - please install setuptools and pip')
-from solar_utils import __version__ as VERSION, __name__ as NAME
+from solar_utils import (
+    __version__ as VERSION, __name__ as NAME, __author__ as AUTHOR,
+    __email__ as EMAIL, __url__ as URL
+)
 from solar_utils.tests import test_cdlls
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
 LOGGER = logging.getLogger('SETUP')
+
+README = 'README.rst'
+try:
+    with open(os.path.join(os.path.dirname(__file__), README), 'r') as readme:
+        README = readme.read()
+except IOError:
+    README = ''
 
 # set platform constants
 CCFLAGS, RPATH, INSTALL_NAME, LDFLAGS, MACROS = None, None, None, None, None
@@ -88,7 +98,7 @@ def dylib_monkeypatch(self):
 
 
 # use dummy to get correct platform metadata
-PKG_DATA = []
+PKG_DATA = ['NREL_DISCLAIMERS-COPYRIGHTS-LICENSES.txt']
 DUMMY = Extension('%s.dummy' % NAME, sources=[os.path.join(NAME, 'dummy.c')])
 SRC_DIR = os.path.join(NAME, 'src')
 BUILD_DIR = os.path.join(NAME, 'build')
@@ -127,11 +137,6 @@ elif 'sdist' in sys.argv:
     PKG_DATA.append(os.path.join('src', 'orig', 'solpos', '*.*'))
     PKG_DATA.append(os.path.join('src', 'orig', 'spectrl2', '*.*'))
 elif not LIB_FILES_EXIST:
-    PKG_DATA = ['%s.mk' % PLATFORM,
-                SOLPOSAM_LIB_FILE, SPECTRL2_LIB_FILE,
-                os.path.join('src', '*.*'),
-                os.path.join('src', 'orig', 'solpos', '*.*'),
-                os.path.join('src', 'orig', 'spectrl2', '*.*')]
     # clean build directory
     if os.path.exists(BUILD_DIR):
         shutil.rmtree(BUILD_DIR)  # delete entire directory tree
@@ -166,10 +171,20 @@ elif not LIB_FILES_EXIST:
     # test libraries
     test_cdlls.test_solposAM()
     test_cdlls.test_spectrl2()
+if LIB_FILES_EXIST and 'sdist' not in sys.argv:
+    PKG_DATA += [SOLPOSAM_LIB_FILE, SPECTRL2_LIB_FILE]
 
-setup(name=NAME,
-      version=VERSION,
-      packages=[NAME, TESTS],
-      package_data={NAME: PKG_DATA, TESTS: TEST_DATA},
-      description='Python wrapper around NREL SOLPOS and SPECTRL2',
-      ext_modules=[DUMMY])
+setup(
+    name='SolarUtils',
+    version=VERSION,
+    description='Python wrappers around NREL SOLPOS and SPECTRL2',
+    long_description=README,
+    author=AUTHOR,
+    author_email=EMAIL,
+    url=URL,
+    license='BSD 3-Clause',
+    platforms=['win32', 'linux', 'linux2', 'darwin'],
+    packages=[NAME, TESTS],
+    package_data={NAME: PKG_DATA, TESTS: TEST_DATA},
+    ext_modules=[DUMMY]
+)

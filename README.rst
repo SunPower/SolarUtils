@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/SunPower/SolarUtils.svg?branch=master
+    :target: https://travis-ci.org/SunPower/SolarUtils
+
 SolarUtils is set of Python wrappers around the publicly available
 `NREL <http://www.nrel.gov/>`_
 `SOLPOS <http://rredc.nrel.gov/solar/codesandalgorithms/solpos/>`_ and
@@ -24,12 +27,15 @@ SolarUtils has no requirements for usage however for installation, testing and
 to build the documentaiton you will need the following pacakges:
 
 * NumPy
-* Nose
+* PyTest
 * Sphinx
 
 Usage
 =====
-See the corresponding docmentation for NREL SOLPOS and SPECTRL2 for more detail.
+See `SOLPOS Documentation <http://rredc.nrel.gov/solar/codesandalgorithms/solpos/aboutsolpos.html>`_
+and
+`SPECTRL2 Documentation <http://rredc.nrel.gov/solar/models/spectral/spectrl2/documentation.html>`_
+for more detail.
 
 Examples
 --------

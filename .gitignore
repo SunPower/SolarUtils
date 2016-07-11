@@ -31,3 +31,4 @@ solar_utils/docs/_build/
 
 # testing
 __pycache__/
+.cache/

@@ -120,11 +120,9 @@ html_theme = 'alabaster'
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    'description': 'Python wrappers around NREL SOLPOS and SPECTRL2',
     'github_user': 'SunPower',
     'github_repo': 'SolarUtils',
     'github_banner': True,
-    'travis_button': True,
     'show_related': True
 }
 

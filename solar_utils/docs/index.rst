@@ -5,6 +5,8 @@
 
 Welcome to SolarUtils's documentation!
 ======================================
+**Version** |version| (|release|)
+
 .. include:: ../../README.rst
 
 .. image:: example.png

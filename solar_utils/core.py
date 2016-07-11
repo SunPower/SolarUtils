@@ -54,12 +54,12 @@ def solposAM(location, datetime, weather):
     :type datetime: int
     :param weather: [ambient-pressure (mB), ambient-temperature (C)]
     :type weather: float
-    :returns: angles, airmass
+    :returns: angles [degrees], airmass [atm]
     :rtype: float
     :raises: :exc:`~solar_utils.exceptions.SOLPOS_Error`
 
-    The return values contain the solar zenith and azimuth angles in degrees,
-    and the relative and absolute (or pressure corrected) air mass.
+    Returns the solar zenith and azimuth angles in degrees, as well as the
+    relative and absolute (or pressure corrected) air mass.
 
     **Examples:**
 
@@ -114,21 +114,36 @@ def spectrl2(units, location, datetime, weather, orientation,
     :param units: set ``units`` = 1 for W/m\ :sup:`2`/micron
     :type units: int
     :param location: latitude, longitude and UTC-timezone
-    :type location: list of floats
+    :type location: float
     :param datetime: year, month, day, hour, minute and second
-    :type datetime: list of ints
+    :type datetime: int
     :param weather: ambient-pressure [mB] and ambient-temperature [C]
-    :type weather: list of floats
+    :type weather: float
     :param orientation: tilt and aspect [degrees]
-    :type orientation: list of floats
+    :type orientation: float
     :param atmospheric_conditions: alpha, assym, ozone, tau500 and watvap
-    :type atmospheric_conditions: list of floats
+    :type atmospheric_conditions: float
     :param albedo: 6 wavelengths and 6 reflectivities
-    :type albedo: list of lists of floats
-    :returns: specdif, specdir, specetr, specglo and specx
+    :type albedo: float
+    :returns: spectral decomposition, x-coordinate
     :rtype: float
     :raises: :exc:`~solar_utils.exceptions.SPECTRL2_Error`,
         :exc:`~solar_utils.exceptions.SOLPOS_Error`
+
+    Returns the diffuse, direct, extraterrestrial and global spectral components
+    on the tilted surface in as a function of x-coordinate specified by units.
+
+    =====  ===============================================================
+    units  output units
+    =====  ===============================================================
+    1      irradiance (W/sq m/micron) per wavelength (microns)
+    2      photon flux (10.0E+16 /sq cm/s/micron) per wavelength (microns)
+    3      photon flux density (10.0E+16 /sq cm/s/eV) per energy (eV)
+    =====  ===============================================================
+
+    See
+    `NREL SPECTRL2 Documentation <http://rredc.nrel.gov/solar/models/spectral/spectrl2/documentation.html>`_
+    for more detail.
 
     .. seealso::
         :func:`solposAM`

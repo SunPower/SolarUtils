@@ -1,6 +1,7 @@
 # build
 venv/
 build/
+solar_utils/build/
 dist/
 solar_utils.egg-info/
 *.pyc
@@ -26,3 +27,7 @@ SolarUtils.sublime-project
 
 # sphinx
 docs/_build/
+solar_utils/docs/_build/
+
+# testing
+__pycache__/

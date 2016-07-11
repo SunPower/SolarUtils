@@ -7,11 +7,6 @@ Solar utilities based on `SOLPOS
 <http://www.nrel.gov/rredc/models_tools.html>`_
 
 2013 SunPower Corp.
-Confidential & Proprietary
-Do Not Distribute
-
-.. document private functions
-.. autofunction:: _int2bits
 """
 
 import ctypes
@@ -42,8 +37,8 @@ def _int2bits(err_code):
     """
     Convert integer to bits.
 
-    :param x: integer to convert
-    :returns: log(x, 2)
+    :param err_code: integer to convert
+    :returns: log(err_code, 2)
     """
     return int(math.log(err_code, 2))
 

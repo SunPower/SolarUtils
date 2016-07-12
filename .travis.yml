@@ -1,8 +1,4 @@
 language: python
-sudo: required
-before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y libatlas-dev liblapack-dev libblas-dev gfortran
 before_script:
   - python /home/travis/build/SunPower/SolarUtils/setup.py bdist_wheel
   - pip install /home/travis/build/SunPower/SolarUtils/dist/SolarUtils-*.whl

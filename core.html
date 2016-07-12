@@ -1,0 +1,302 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Core &mdash; SolarUtils Bartenders documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'Bartenders',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="SolarUtils Bartenders documentation" href="index.html" />
+    <link rel="next" title="Exceptions" href="exceptions.html" />
+    <link rel="prev" title="Welcome to SolarUtils’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="core">
+<span id="id1"></span><h1>Core<a class="headerlink" href="#core" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-solar_utils.core"></span><p>Solar utilities based on <a class="reference external" href="http://rredc.nrel.gov/solar/codesandalgorithms/solpos/">SOLPOS</a> and <a class="reference external" href="http://rredc.nrel.gov/solar/models/spectral/">SPECTRL2</a> from
+<a class="reference external" href="http://www.nrel.gov/rredc/models_tools.html">NREL RREDC Solar Resource Models and Tools</a></p>
+<p>2013 SunPower Corp.</p>
+<div class="section" id="libraries">
+<h2>Libraries<a class="headerlink" href="#libraries" title="Permalink to this headline">¶</a></h2>
+<p>Solar Utils depends on two libraries that must be compiled in the same folder as
+<code class="docutils literal"><span class="pre">core.py</span></code>. The library extension depends on the system platform. Windows uses
+dynamically linked libraries, <code class="docutils literal"><span class="pre">.dll</span></code>, Linux uses shared objects, <code class="docutils literal"><span class="pre">.so</span></code> and
+Mac OS X (<em>aka Darwin</em>) uses dynamic libraries, <code class="docutils literal"><span class="pre">.dylib</span></code>. Also both Linux and
+Darwin libraries have <code class="docutils literal"><span class="pre">lib</span></code> prefixed to the library name.</p>
+<div class="section" id="solposam">
+<h3>solposAM<a class="headerlink" href="#solposam" title="Permalink to this headline">¶</a></h3>
+<p>A library compiled from
+<a class="reference external" href="http://rredc.nrel.gov/solar/codesandalgorithms/solpos/">NREL&#8217;s SOLPOS 2.0</a>
+that exports functions called by <a class="reference internal" href="#solar_utils.core.solposAM" title="solar_utils.core.solposAM"><code class="xref py py-func docutils literal"><span class="pre">solposAM()</span></code></a>.</p>
+<dl class="data">
+<dt id="solar_utils.core.SOLPOSAMDLL">
+<code class="descclassname">solar_utils.core.</code><code class="descname">SOLPOSAMDLL</code><a class="headerlink" href="#solar_utils.core.SOLPOSAMDLL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="id2">
+<h3>spectrl2<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>A library compiled from
+<a class="reference external" href="http://rredc.nrel.gov/solar/models/spectral/">NREL&#8217;s SPECTRL2 V.2</a>
+that imports <a class="reference internal" href="#solar_utils.core.SOLPOSAMDLL" title="solar_utils.core.SOLPOSAMDLL"><code class="xref py py-data docutils literal"><span class="pre">SOLPOSAMDLL</span></code></a> and exports functions called by
+<a class="reference internal" href="#solar_utils.core.spectrl2" title="solar_utils.core.spectrl2"><code class="xref py py-func docutils literal"><span class="pre">spectrl2()</span></code></a>.</p>
+<dl class="data">
+<dt id="solar_utils.core.SPECTRL2DLL">
+<code class="descclassname">solar_utils.core.</code><code class="descname">SPECTRL2DLL</code><a class="headerlink" href="#solar_utils.core.SPECTRL2DLL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+<div class="section" id="id3">
+<h2>solposAM<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="solar_utils.core.solposAM">
+<code class="descclassname">solar_utils.core.</code><code class="descname">solposAM</code><span class="sig-paren">(</span><em>location</em>, <em>datetime</em>, <em>weather</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solar_utils/core.html#solposAM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar_utils.core.solposAM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate solar position and air mass by calling functions exported by
+<a class="reference internal" href="#solar_utils.core.SOLPOSAMDLL" title="solar_utils.core.SOLPOSAMDLL"><code class="xref py py-data docutils literal"><span class="pre">SOLPOSAMDLL</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>location</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; [latitude, longitude, UTC-timezone]</li>
+<li><strong>datetime</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; [year, month, day, hour, minute, second]</li>
+<li><strong>weather</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; [ambient-pressure (mB), ambient-temperature (C)]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">angles [degrees], airmass [atm]</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="exceptions.html#solar_utils.exceptions.SOLPOS_Error" title="solar_utils.exceptions.SOLPOS_Error"><code class="xref py py-exc docutils literal"><span class="pre">SOLPOS_Error</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns the solar zenith and azimuth angles in degrees, as well as the
+relative and absolute (or pressure corrected) air mass.</p>
+<p><strong>Examples:</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">location</span> <span class="o">=</span> <span class="p">[</span><span class="mf">35.56836</span><span class="p">,</span> <span class="o">-</span><span class="mf">119.2022</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2013</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">weather</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1015.62055</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">angles</span><span class="p">,</span> <span class="n">airmass</span><span class="p">)</span> <span class="o">=</span> <span class="n">solposAM</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">weather</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">angles</span><span class="p">)</span>
+<span class="go">[15.074043273925781, 213.29042053222656]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">airmass</span><span class="p">)</span>
+<span class="go">[1.0352272987365723, 1.0379053354263306]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="id4">
+<h2>spectrl2<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="solar_utils.core.spectrl2">
+<code class="descclassname">solar_utils.core.</code><code class="descname">spectrl2</code><span class="sig-paren">(</span><em>units</em>, <em>location</em>, <em>datetime</em>, <em>weather</em>, <em>orientation</em>, <em>atmospheric_conditions</em>, <em>albedo</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solar_utils/core.html#spectrl2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar_utils.core.spectrl2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate solar spectrum by calling functions exported by
+<a class="reference internal" href="#solar_utils.core.SPECTRL2DLL" title="solar_utils.core.SPECTRL2DLL"><code class="xref py py-data docutils literal"><span class="pre">SPECTRL2DLL</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>units</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; set <code class="docutils literal"><span class="pre">units</span></code> = 1 for W/m<sup>2</sup>/micron</li>
+<li><strong>location</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; latitude, longitude and UTC-timezone</li>
+<li><strong>datetime</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; year, month, day, hour, minute and second</li>
+<li><strong>weather</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; ambient-pressure [mB] and ambient-temperature [C]</li>
+<li><strong>orientation</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; tilt and aspect [degrees]</li>
+<li><strong>atmospheric_conditions</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; alpha, assym, ozone, tau500 and watvap</li>
+<li><strong>albedo</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; 6 wavelengths and 6 reflectivities</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">spectral decomposition, x-coordinate</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="exceptions.html#solar_utils.exceptions.SPECTRL2_Error" title="solar_utils.exceptions.SPECTRL2_Error"><code class="xref py py-exc docutils literal"><span class="pre">SPECTRL2_Error</span></code></a>,
+<a class="reference internal" href="exceptions.html#solar_utils.exceptions.SOLPOS_Error" title="solar_utils.exceptions.SOLPOS_Error"><code class="xref py py-exc docutils literal"><span class="pre">SOLPOS_Error</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns the diffuse, direct, extraterrestrial and global spectral components
+on the tilted surface in as a function of x-coordinate specified by units.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="7%" />
+<col width="93%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">units</th>
+<th class="head">output units</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>1</td>
+<td>irradiance (W/sq m/micron) per wavelength (microns)</td>
+</tr>
+<tr class="row-odd"><td>2</td>
+<td>photon flux (10.0E+16 /sq cm/s/micron) per wavelength (microns)</td>
+</tr>
+<tr class="row-even"><td>3</td>
+<td>photon flux density (10.0E+16 /sq cm/s/eV) per energy (eV)</td>
+</tr>
+</tbody>
+</table>
+<p>See
+<a class="reference external" href="http://rredc.nrel.gov/solar/models/spectral/spectrl2/documentation.html">NREL SPECTRL2 Documentation</a>
+for more detail.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#solar_utils.core.solposAM" title="solar_utils.core.solposAM"><code class="xref py py-func docutils literal"><span class="pre">solposAM()</span></code></a></p>
+</div>
+<p><strong>Examples:</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">units</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">location</span> <span class="o">=</span> <span class="p">[</span><span class="mf">33.65</span><span class="p">,</span> <span class="o">-</span><span class="mf">84.43</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1999</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">37</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">weather</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1006.0</span><span class="p">,</span> <span class="mf">27.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">orientation</span> <span class="o">=</span> <span class="p">[</span><span class="mf">33.65</span><span class="p">,</span> <span class="mf">135.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">atmospheric_conditions</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.14</span><span class="p">,</span> <span class="mf">0.65</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.36</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">albedo</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]</span> <span class="o">+</span> <span class="p">([</span><span class="mf">0.2</span><span class="p">]</span> <span class="o">*</span> <span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">specdif</span><span class="p">,</span> <span class="n">specdir</span><span class="p">,</span> <span class="n">specetr</span><span class="p">,</span> <span class="n">specglo</span><span class="p">,</span>
+<span class="go">     specx) = spectrl2(units, location, datetime, weather, orientation,</span>
+<span class="go">                       atmospheric_conditions, albedo)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="int2bits">
+<h2>_int2bits<a class="headerlink" href="#int2bits" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="solar_utils.core._int2bits">
+<code class="descclassname">solar_utils.core.</code><code class="descname">_int2bits</code><span class="sig-paren">(</span><em>err_code</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/solar_utils/core.html#_int2bits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#solar_utils.core._int2bits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert integer to bits.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>err_code</strong> &#8211; integer to convert</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">log(err_code, 2)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>Used to decipher the return value error codes from SOLPOS and SPECTRL2.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/sp_2014_logo_black_orange_rgb.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Core</a><ul>
+<li><a class="reference internal" href="#libraries">Libraries</a><ul>
+<li><a class="reference internal" href="#solposam">solposAM</a></li>
+<li><a class="reference internal" href="#id2">spectrl2</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3">solposAM</a></li>
+<li><a class="reference internal" href="#id4">spectrl2</a></li>
+<li><a class="reference internal" href="#int2bits">_int2bits</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to SolarUtils&#8217;s documentation!</a></li>
+      <li>Next: <a href="exceptions.html" title="next chapter">Exceptions</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/core.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, SunPower.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/core.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/SunPower/SolarUtils" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

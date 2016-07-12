@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>solar_utils.core &mdash; SolarUtils Bartenders documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     'Bartenders',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="SolarUtils Bartenders documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for solar_utils.core</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Solar utilities based on `SOLPOS</span>
+<span class="sd">&lt;http://rredc.nrel.gov/solar/codesandalgorithms/solpos/&gt;`_ and `SPECTRL2</span>
+<span class="sd">&lt;http://rredc.nrel.gov/solar/models/spectral/&gt;`_ from</span>
+<span class="sd">`NREL RREDC Solar Resource Models and Tools</span>
+<span class="sd">&lt;http://www.nrel.gov/rredc/models_tools.html&gt;`_</span>
+
+<span class="sd">2013 SunPower Corp.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">solar_utils.exceptions</span> <span class="kn">import</span> <span class="n">SOLPOS_Error</span><span class="p">,</span> <span class="n">SPECTRL2_Error</span>
+
+<span class="n">_DIRNAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span>
+<span class="n">PLATFORM</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span>
+<span class="k">if</span> <span class="n">PLATFORM</span> <span class="o">==</span> <span class="s1">&#39;win32&#39;</span><span class="p">:</span>
+    <span class="n">SOLPOSAM</span> <span class="o">=</span> <span class="s1">&#39;solposAM.dll&#39;</span>
+    <span class="n">SPECTRL2</span> <span class="o">=</span> <span class="s1">&#39;spectrl2.dll&#39;</span>
+<span class="k">elif</span> <span class="n">PLATFORM</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;linux2&#39;</span><span class="p">,</span> <span class="s1">&#39;linux&#39;</span><span class="p">]:</span>
+    <span class="n">PLATFORM</span> <span class="o">=</span> <span class="s1">&#39;linux&#39;</span>
+    <span class="n">SOLPOSAM</span> <span class="o">=</span> <span class="s1">&#39;libsolposAM.so&#39;</span>
+    <span class="n">SPECTRL2</span> <span class="o">=</span> <span class="s1">&#39;libspectrl2.so&#39;</span>
+<span class="k">elif</span> <span class="n">PLATFORM</span> <span class="o">==</span> <span class="s1">&#39;darwin&#39;</span><span class="p">:</span>
+    <span class="n">SOLPOSAM</span> <span class="o">=</span> <span class="s1">&#39;libsolposAM.dylib&#39;</span>
+    <span class="n">SPECTRL2</span> <span class="o">=</span> <span class="s1">&#39;libspectrl2.dylib&#39;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="s1">&#39;Platform &quot;</span><span class="si">%s</span><span class="s1">&quot; is unknown or unsupported.&#39;</span> <span class="o">%</span> <span class="n">PLATFORM</span><span class="p">)</span>
+<span class="n">SOLPOSAMDLL</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_DIRNAME</span><span class="p">,</span> <span class="n">SOLPOSAM</span><span class="p">)</span>
+<span class="n">SPECTRL2DLL</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_DIRNAME</span><span class="p">,</span> <span class="n">SPECTRL2</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="_int2bits"><a class="viewcode-back" href="../../core.html#solar_utils.core._int2bits">[docs]</a><span class="k">def</span> <span class="nf">_int2bits</span><span class="p">(</span><span class="n">err_code</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert integer to bits.</span>
+
+<span class="sd">    :param err_code: integer to convert</span>
+<span class="sd">    :returns: log(err_code, 2)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">err_code</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="solposAM"><a class="viewcode-back" href="../../core.html#solar_utils.core.solposAM">[docs]</a><span class="k">def</span> <span class="nf">solposAM</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">weather</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate solar position and air mass by calling functions exported by</span>
+<span class="sd">    :data:`SOLPOSAMDLL`.</span>
+
+<span class="sd">    :param location: [latitude, longitude, UTC-timezone]</span>
+<span class="sd">    :type location: float</span>
+<span class="sd">    :param datetime: [year, month, day, hour, minute, second]</span>
+<span class="sd">    :type datetime: int</span>
+<span class="sd">    :param weather: [ambient-pressure (mB), ambient-temperature (C)]</span>
+<span class="sd">    :type weather: float</span>
+<span class="sd">    :returns: angles [degrees], airmass [atm]</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raises: :exc:`~solar_utils.exceptions.SOLPOS_Error`</span>
+
+<span class="sd">    Returns the solar zenith and azimuth angles in degrees, as well as the</span>
+<span class="sd">    relative and absolute (or pressure corrected) air mass.</span>
+
+<span class="sd">    **Examples:**</span>
+
+<span class="sd">    &gt;&gt;&gt; location = [35.56836, -119.2022, -8.0]</span>
+<span class="sd">    &gt;&gt;&gt; datetime = [2013, 6, 5, 12, 31, 0]</span>
+<span class="sd">    &gt;&gt;&gt; weather = [1015.62055, 40.0]</span>
+<span class="sd">    &gt;&gt;&gt; (angles, airmass) = solposAM(location, datetime, weather)</span>
+<span class="sd">    &gt;&gt;&gt; list(angles)</span>
+<span class="sd">    [15.074043273925781, 213.29042053222656]</span>
+<span class="sd">    &gt;&gt;&gt; list(airmass)</span>
+<span class="sd">    [1.0352272987365723, 1.0379053354263306]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># load the DLL</span>
+    <span class="n">solposAM_dll</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="n">SOLPOSAMDLL</span><span class="p">)</span>
+    <span class="n">_solposAM</span> <span class="o">=</span> <span class="n">solposAM_dll</span><span class="o">.</span><span class="n">solposAM</span>
+    <span class="c1"># cast Python types as ctypes</span>
+    <span class="n">_location</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)(</span><span class="o">*</span><span class="n">location</span><span class="p">)</span>
+    <span class="n">_datetime</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span> <span class="o">*</span> <span class="mi">6</span><span class="p">)(</span><span class="o">*</span><span class="n">datetime</span><span class="p">)</span>
+    <span class="n">_weather</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)(</span><span class="o">*</span><span class="n">weather</span><span class="p">)</span>
+    <span class="c1"># allocate space for results</span>
+    <span class="n">angles</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)()</span>
+    <span class="n">airmass</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)()</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)()</span>
+    <span class="n">orientation</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)()</span>
+    <span class="n">shadowband</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)()</span>
+    <span class="c1"># call DLL</span>
+    <span class="n">err_code</span> <span class="o">=</span> <span class="n">_solposAM</span><span class="p">(</span><span class="n">_location</span><span class="p">,</span> <span class="n">_datetime</span><span class="p">,</span> <span class="n">_weather</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">airmass</span><span class="p">,</span>
+                         <span class="n">settings</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">shadowband</span><span class="p">)</span>
+    <span class="c1"># return results if successful, otherwise raise SOLPOS_Error</span>
+    <span class="k">if</span> <span class="n">err_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">angles</span><span class="p">,</span> <span class="n">airmass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># convert err_code to bits</span>
+        <span class="n">_code</span> <span class="o">=</span> <span class="n">_int2bits</span><span class="p">(</span><span class="n">err_code</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="n">location</span><span class="p">,</span>
+                <span class="s1">&#39;datetime&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+                <span class="s1">&#39;weather&#39;</span><span class="p">:</span> <span class="n">weather</span><span class="p">,</span>
+                <span class="s1">&#39;angles&#39;</span><span class="p">:</span> <span class="n">angles</span><span class="p">,</span>
+                <span class="s1">&#39;airmass&#39;</span><span class="p">:</span> <span class="n">airmass</span><span class="p">,</span>
+                <span class="s1">&#39;settings&#39;</span><span class="p">:</span> <span class="n">settings</span><span class="p">,</span>
+                <span class="s1">&#39;orientation&#39;</span><span class="p">:</span> <span class="n">orientation</span><span class="p">,</span>
+                <span class="s1">&#39;shadowband&#39;</span><span class="p">:</span> <span class="n">shadowband</span><span class="p">}</span>
+        <span class="k">raise</span> <span class="n">SOLPOS_Error</span><span class="p">(</span><span class="n">_code</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="spectrl2"><a class="viewcode-back" href="../../core.html#solar_utils.core.spectrl2">[docs]</a><span class="k">def</span> <span class="nf">spectrl2</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">weather</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span>
+             <span class="n">atmospheric_conditions</span><span class="p">,</span> <span class="n">albedo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate solar spectrum by calling functions exported by</span>
+<span class="sd">    :data:`SPECTRL2DLL`.</span>
+
+<span class="sd">    :param units: set ``units`` = 1 for W/m\ :sup:`2`/micron</span>
+<span class="sd">    :type units: int</span>
+<span class="sd">    :param location: latitude, longitude and UTC-timezone</span>
+<span class="sd">    :type location: float</span>
+<span class="sd">    :param datetime: year, month, day, hour, minute and second</span>
+<span class="sd">    :type datetime: int</span>
+<span class="sd">    :param weather: ambient-pressure [mB] and ambient-temperature [C]</span>
+<span class="sd">    :type weather: float</span>
+<span class="sd">    :param orientation: tilt and aspect [degrees]</span>
+<span class="sd">    :type orientation: float</span>
+<span class="sd">    :param atmospheric_conditions: alpha, assym, ozone, tau500 and watvap</span>
+<span class="sd">    :type atmospheric_conditions: float</span>
+<span class="sd">    :param albedo: 6 wavelengths and 6 reflectivities</span>
+<span class="sd">    :type albedo: float</span>
+<span class="sd">    :returns: spectral decomposition, x-coordinate</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raises: :exc:`~solar_utils.exceptions.SPECTRL2_Error`,</span>
+<span class="sd">        :exc:`~solar_utils.exceptions.SOLPOS_Error`</span>
+
+<span class="sd">    Returns the diffuse, direct, extraterrestrial and global spectral components</span>
+<span class="sd">    on the tilted surface in as a function of x-coordinate specified by units.</span>
+
+<span class="sd">    =====  ===============================================================</span>
+<span class="sd">    units  output units</span>
+<span class="sd">    =====  ===============================================================</span>
+<span class="sd">    1      irradiance (W/sq m/micron) per wavelength (microns)</span>
+<span class="sd">    2      photon flux (10.0E+16 /sq cm/s/micron) per wavelength (microns)</span>
+<span class="sd">    3      photon flux density (10.0E+16 /sq cm/s/eV) per energy (eV)</span>
+<span class="sd">    =====  ===============================================================</span>
+
+<span class="sd">    See</span>
+<span class="sd">    `NREL SPECTRL2 Documentation &lt;http://rredc.nrel.gov/solar/models/spectral/spectrl2/documentation.html&gt;`_</span>
+<span class="sd">    for more detail.</span>
+
+<span class="sd">    .. seealso::</span>
+<span class="sd">        :func:`solposAM`</span>
+
+<span class="sd">    **Examples:**</span>
+
+<span class="sd">    &gt;&gt;&gt; units = 1</span>
+<span class="sd">    &gt;&gt;&gt; location = [33.65, -84.43, -5.0]</span>
+<span class="sd">    &gt;&gt;&gt; datetime = [1999, 7, 22, 9, 45, 37]</span>
+<span class="sd">    &gt;&gt;&gt; weather = [1006.0, 27.0]</span>
+<span class="sd">    &gt;&gt;&gt; orientation = [33.65, 135.0]</span>
+<span class="sd">    &gt;&gt;&gt; atmospheric_conditions = [1.14, 0.65, -1.0, 0.2, 1.36]</span>
+<span class="sd">    &gt;&gt;&gt; albedo = [0.3, 0.7, 0.8, 1.3, 2.5, 4.0] + ([0.2] * 6)</span>
+<span class="sd">    &gt;&gt;&gt; (specdif, specdir, specetr, specglo,</span>
+<span class="sd">         specx) = spectrl2(units, location, datetime, weather, orientation,</span>
+<span class="sd">                           atmospheric_conditions, albedo)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># load the DLL</span>
+    <span class="n">ctypes</span><span class="o">.</span><span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="n">SOLPOSAMDLL</span><span class="p">)</span>  <span class="c1"># requires &#39;solpos.dll&#39;</span>
+    <span class="n">spectrl2_dll</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="n">SPECTRL2DLL</span><span class="p">)</span>
+    <span class="n">_spectrl2</span> <span class="o">=</span> <span class="n">spectrl2_dll</span><span class="o">.</span><span class="n">spectrl2</span>
+    <span class="c1"># cast Python types as ctypes</span>
+    <span class="n">_location</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)(</span><span class="o">*</span><span class="n">location</span><span class="p">)</span>
+    <span class="n">_datetime</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span> <span class="o">*</span> <span class="mi">6</span><span class="p">)(</span><span class="o">*</span><span class="n">datetime</span><span class="p">)</span>
+    <span class="n">_weather</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)(</span><span class="o">*</span><span class="n">weather</span><span class="p">)</span>
+    <span class="n">_orientation</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)(</span><span class="o">*</span><span class="n">orientation</span><span class="p">)</span>
+    <span class="n">_atmospheric_conditions</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)(</span><span class="o">*</span><span class="n">atmospheric_conditions</span><span class="p">)</span>
+    <span class="n">_albedo</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">12</span><span class="p">)(</span><span class="o">*</span><span class="n">albedo</span><span class="p">)</span>
+    <span class="c1"># allocate space for results</span>
+    <span class="n">specdif</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">122</span><span class="p">)()</span>
+    <span class="n">specdir</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">122</span><span class="p">)()</span>
+    <span class="n">specetr</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">122</span><span class="p">)()</span>
+    <span class="n">specglo</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">122</span><span class="p">)()</span>
+    <span class="n">specx</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">122</span><span class="p">)()</span>
+    <span class="n">angles</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)()</span>
+    <span class="n">airmass</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)()</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)()</span>
+    <span class="n">shadowband</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)()</span>
+    <span class="c1"># call DLL</span>
+    <span class="n">err_code</span> <span class="o">=</span> <span class="n">_spectrl2</span><span class="p">(</span>
+        <span class="n">units</span><span class="p">,</span> <span class="n">_location</span><span class="p">,</span> <span class="n">_datetime</span><span class="p">,</span> <span class="n">_weather</span><span class="p">,</span> <span class="n">_orientation</span><span class="p">,</span>
+        <span class="n">_atmospheric_conditions</span><span class="p">,</span> <span class="n">_albedo</span><span class="p">,</span> <span class="n">specdif</span><span class="p">,</span> <span class="n">specdir</span><span class="p">,</span> <span class="n">specetr</span><span class="p">,</span> <span class="n">specglo</span><span class="p">,</span>
+        <span class="n">specx</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">airmass</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">shadowband</span>
+    <span class="p">)</span>
+    <span class="c1"># return results if successful, otherwise raise exception</span>
+    <span class="k">if</span> <span class="n">err_code</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">specdif</span><span class="p">,</span> <span class="n">specdir</span><span class="p">,</span> <span class="n">specetr</span><span class="p">,</span> <span class="n">specglo</span><span class="p">,</span> <span class="n">specx</span>
+    <span class="k">elif</span> <span class="n">err_code</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;units&#39;</span><span class="p">:</span> <span class="n">units</span><span class="p">,</span>
+                <span class="s1">&#39;tau500&#39;</span><span class="p">:</span> <span class="n">atmospheric_conditions</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                <span class="s1">&#39;watvap&#39;</span><span class="p">:</span> <span class="n">atmospheric_conditions</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+                <span class="s1">&#39;assym&#39;</span><span class="p">:</span> <span class="n">atmospheric_conditions</span><span class="p">[</span><span class="mi">1</span><span class="p">]}</span>
+        <span class="k">raise</span> <span class="n">SPECTRL2_Error</span><span class="p">(</span><span class="n">err_code</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># convert err_code to bits</span>
+        <span class="n">_code</span> <span class="o">=</span> <span class="n">_int2bits</span><span class="p">(</span><span class="n">err_code</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="n">location</span><span class="p">,</span>
+                <span class="s1">&#39;datetime&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+                <span class="s1">&#39;weather&#39;</span><span class="p">:</span> <span class="n">weather</span><span class="p">,</span>
+                <span class="s1">&#39;angles&#39;</span><span class="p">:</span> <span class="n">angles</span><span class="p">,</span>
+                <span class="s1">&#39;airmass&#39;</span><span class="p">:</span> <span class="n">airmass</span><span class="p">,</span>
+                <span class="s1">&#39;settings&#39;</span><span class="p">:</span> <span class="n">settings</span><span class="p">,</span>
+                <span class="s1">&#39;orientation&#39;</span><span class="p">:</span> <span class="n">orientation</span><span class="p">,</span>
+                <span class="s1">&#39;shadowband&#39;</span><span class="p">:</span> <span class="n">shadowband</span><span class="p">}</span>
+        <span class="k">raise</span> <span class="n">SOLPOS_Error</span><span class="p">(</span><span class="n">_code</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/sp_2014_logo_black_orange_rgb.png" alt="Logo"/>
+            </a></p><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, SunPower.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/SunPower/SolarUtils" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

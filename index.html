@@ -1,0 +1,290 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to SolarUtils’s documentation! &mdash; SolarUtils Bartenders documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'Bartenders',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="SolarUtils Bartenders documentation" href="#" />
+    <link rel="next" title="Core" href="core.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-solarutils-s-documentation">
+<h1>Welcome to SolarUtils&#8217;s documentation!<a class="headerlink" href="#welcome-to-solarutils-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p><strong>Version</strong> 0.2.1 (Bartenders)</p>
+<a class="reference external image-reference" href="https://travis-ci.org/SunPower/SolarUtils"><img alt="https://travis-ci.org/SunPower/SolarUtils.svg?branch=master" src="https://travis-ci.org/SunPower/SolarUtils.svg?branch=master" /></a>
+<p>SolarUtils is set of Python wrappers around the publicly available
+<a class="reference external" href="http://www.nrel.gov/">NREL</a>
+<a class="reference external" href="http://rredc.nrel.gov/solar/codesandalgorithms/solpos/">SOLPOS</a> and
+<a class="reference external" href="http://rredc.nrel.gov/solar/models/spectral/">SPECTRL2</a> C-language computer
+programs that calculate solar position and spectral decomposition. Please read
+the <a class="reference external" href="http://www.nrel.gov/disclaimer.html">NREL disclaimer and license</a>. Usage
+of this software implies acceptance of the terms.</p>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>Use <code class="docutils literal"><span class="pre">pip</span></code> to install
+<a class="reference external" href="https://pypi.python.org/pypi/SolarUtils">SolarUtils from the PyPI</a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">SolarUtils</span>
+</pre></div>
+</div>
+<p>You can also download a source distribution from PyPI or clone the repository
+and use Python <code class="docutils literal"><span class="pre">distutils</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="requirements">
+<h1>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h1>
+<p>SolarUtils has no requirements for usage however for installation, testing and
+to build the documentaiton you will need the following pacakges:</p>
+<ul class="simple">
+<li>NumPy</li>
+<li>PyTest</li>
+<li>Sphinx</li>
+</ul>
+</div>
+<div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>See <a class="reference external" href="http://rredc.nrel.gov/solar/codesandalgorithms/solpos/aboutsolpos.html">SOLPOS Documentation</a>
+and
+<a class="reference external" href="http://rredc.nrel.gov/solar/models/spectral/spectrl2/documentation.html">SPECTRL2 Documentation</a>
+for more detail.</p>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solar_utils</span> <span class="k">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">location</span> <span class="o">=</span> <span class="p">[</span><span class="mf">35.56836</span><span class="p">,</span> <span class="o">-</span><span class="mf">119.2022</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2013</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">weather</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1015.62055</span><span class="p">,</span> <span class="mf">40.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">angles</span><span class="p">,</span> <span class="n">airmass</span><span class="p">)</span> <span class="o">=</span> <span class="n">solposAM</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">weather</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zenith</span><span class="p">,</span> <span class="n">azimuth</span> <span class="o">=</span> <span class="n">angles</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">zenith</span>
+<span class="go">15.074043273925781</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">azimuth</span>
+<span class="go">213.29042053222656]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">am</span><span class="p">,</span> <span class="n">amp</span> <span class="o">=</span> <span class="n">airmass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">am</span>
+<span class="go">1.0352272987365723</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">amp</span>
+<span class="go">1.0379053354263306]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">units</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">location</span> <span class="o">=</span> <span class="p">[</span><span class="mf">33.65</span><span class="p">,</span> <span class="o">-</span><span class="mf">84.43</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1999</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">37</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">weather</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1006.0</span><span class="p">,</span> <span class="mf">27.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">orientation</span> <span class="o">=</span> <span class="p">[</span><span class="mf">33.65</span><span class="p">,</span> <span class="mf">135.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">atmospheric_conditions</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.14</span><span class="p">,</span> <span class="mf">0.65</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.36</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">albedo</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">]</span> <span class="o">+</span> <span class="p">([</span><span class="mf">0.2</span><span class="p">]</span> <span class="o">*</span> <span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">specdif</span><span class="p">,</span> <span class="n">specdir</span><span class="p">,</span> <span class="n">specetr</span><span class="p">,</span> <span class="n">specglo</span><span class="p">,</span> <span class="n">specx</span> <span class="o">=</span> <span class="n">spectrl2</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">units</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">weather</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">atmospheric_conditions</span><span class="p">,</span> <span class="n">albedo</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">spec</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s1">&#39;DIF&#39;</span><span class="p">:</span> <span class="n">specdif</span><span class="p">,</span> <span class="s1">&#39;DIR&#39;</span><span class="p">:</span> <span class="n">specdir</span><span class="p">,</span> <span class="s1">&#39;ETR&#39;</span><span class="p">:</span> <span class="n">specetr</span><span class="p">,</span> <span class="s1">&#39;GLO&#39;</span><span class="p">:</span> <span class="n">specglo</span><span class="p">},</span>
+<span class="gp">... </span>    <span class="n">index</span><span class="o">=</span><span class="n">specx</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Solar Spectrum Example&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Wavelength, $\lambda [\mu m]$&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Spectral Irradiance, $I_{\lambda} [W/m^2/\mu m]$&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="_images/example.png" src="_images/example.png" />
+</div>
+</div>
+<div class="section" id="changes">
+<h1>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v0-2-1-bartenders-2016-07-11">
+<h2>v0.2.1 - Bartenders (2016-07-11)<a class="headerlink" href="#v0-2-1-bartenders-2016-07-11" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>add documentation</li>
+<li>add BSD 3-clause license</li>
+<li>add NREL license and disclaimers</li>
+<li>fix #5 - Wheel made after <code class="docutils literal"><span class="pre">build_ext</span></code> doesn&#8217;t contain libs</li>
+</ul>
+</div>
+<div class="section" id="v0-2-bakers-2016-02-23">
+<h2>v0.2 - Bakers (2016-02-23)<a class="headerlink" href="#v0-2-bakers-2016-02-23" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>one source for all platforms</li>
+</ul>
+</div>
+<div class="section" id="v0-1-4-artists-2016-02-22">
+<h2>v0.1.4 - Artists (2016-02-22)<a class="headerlink" href="#v0-1-4-artists-2016-02-22" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>fixes <code class="docutils literal"><span class="pre">&#64;rpath</span></code> issue with darwin</li>
+</ul>
+</div>
+<div class="section" id="v0-1-3-actuaries-2016-02-19">
+<h2>v0.1.3 - Actuaries (2016-02-19)<a class="headerlink" href="#v0-1-3-actuaries-2016-02-19" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>compatibility with Python-3</li>
+</ul>
+</div>
+<div class="section" id="v0-1-2-animal-trainers-2016-02-12">
+<h2>v0.1.2 - Animal Trainers (2016-02-12)<a class="headerlink" href="#v0-1-2-animal-trainers-2016-02-12" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>fix package names not platform specific</li>
+<li>change linux to linux2 everywhere</li>
+</ul>
+</div>
+<div class="section" id="v0-1-1-actors-2016-02-12">
+<h2>v0.1.1 - Actors (2016-02-12)<a class="headerlink" href="#v0-1-1-actors-2016-02-12" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Linux x86-64 wheel with binaries in addition to MS Windows x86-64 wheel</li>
+<li>fixed some namespace clashes</li>
+<li>changed <code class="docutils literal"><span class="pre">solar_utils.py</span></code> to <code class="docutils literal"><span class="pre">core.py</span></code></li>
+<li>changed <code class="docutils literal"><span class="pre">solar_utils_exceptions.py</span></code> to <code class="docutils literal"><span class="pre">exceptions.py</span></code></li>
+<li>conformed to variable naming conventions, removed camelcase, use underscores</li>
+<li>change use of builtin keyword <code class="docutils literal"><span class="pre">code</span></code> as variable to <code class="docutils literal"><span class="pre">err_code</span></code></li>
+</ul>
+</div>
+<div class="section" id="v0-1-astronauts-2016-02-12">
+<h2>v0.1 - Astronauts (2016-02-12)<a class="headerlink" href="#v0-1-astronauts-2016-02-12" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>use pip or setuptools to install</li>
+</ul>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.html#libraries">Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#id3">solposAM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#id4">spectrl2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#int2bits">_int2bits</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#solar-utilities-exceptions">Solar Utilities Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#solpos-error">SOLPOS Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#spectrl2-error">SPECTRL2 Error</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="#">
+              <img class="logo" src="_static/sp_2014_logo_black_orange_rgb.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to SolarUtils&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#changes">Changes</a><ul>
+<li><a class="reference internal" href="#v0-2-1-bartenders-2016-07-11">v0.2.1 - Bartenders (2016-07-11)</a></li>
+<li><a class="reference internal" href="#v0-2-bakers-2016-02-23">v0.2 - Bakers (2016-02-23)</a></li>
+<li><a class="reference internal" href="#v0-1-4-artists-2016-02-22">v0.1.4 - Artists (2016-02-22)</a></li>
+<li><a class="reference internal" href="#v0-1-3-actuaries-2016-02-19">v0.1.3 - Actuaries (2016-02-19)</a></li>
+<li><a class="reference internal" href="#v0-1-2-animal-trainers-2016-02-12">v0.1.2 - Animal Trainers (2016-02-12)</a></li>
+<li><a class="reference internal" href="#v0-1-1-actors-2016-02-12">v0.1.1 - Actors (2016-02-12)</a></li>
+<li><a class="reference internal" href="#v0-1-astronauts-2016-02-12">v0.1 - Astronauts (2016-02-12)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="core.html" title="next chapter">Core</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, SunPower.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/SunPower/SolarUtils" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

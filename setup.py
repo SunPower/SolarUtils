@@ -171,6 +171,7 @@ elif not LIB_FILES_EXIST:
     # test libraries
     test_cdlls.test_solposAM()
     test_cdlls.test_spectrl2()
+    LIB_FILES_EXIST = True
 if LIB_FILES_EXIST and 'sdist' not in sys.argv:
     PKG_DATA += [SOLPOSAM_LIB_FILE, SPECTRL2_LIB_FILE]
 

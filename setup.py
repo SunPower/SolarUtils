@@ -17,7 +17,6 @@ from solar_utils import (
     __version__ as VERSION, __name__ as NAME, __author__ as AUTHOR,
     __email__ as EMAIL, __url__ as URL
 )
-from solar_utils.tests import test_cdlls
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -80,6 +79,7 @@ def dylib_monkeypatch(self):
     '.dylib' instead of '.so'.
 
     """
+
     def link_dylib_lib(self, objects, output_libname, output_dir=None,
                        libraries=None, library_dirs=None,
                        runtime_library_dirs=None, export_symbols=None,
@@ -137,6 +137,7 @@ elif 'sdist' in sys.argv:
     PKG_DATA.append(os.path.join('src', 'orig', 'solpos', '*.*'))
     PKG_DATA.append(os.path.join('src', 'orig', 'spectrl2', '*.*'))
 elif not LIB_FILES_EXIST:
+    from solar_utils.tests import test_cdlls
     # clean build directory
     if os.path.exists(BUILD_DIR):
         shutil.rmtree(BUILD_DIR)  # delete entire directory tree

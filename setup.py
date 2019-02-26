@@ -17,7 +17,6 @@ from solar_utils import (
     __version__ as VERSION, __name__ as NAME, __author__ as AUTHOR,
     __email__ as EMAIL, __url__ as URL
 )
-from solar_utils.tests import test_cdlls
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -80,6 +79,7 @@ def dylib_monkeypatch(self):
     '.dylib' instead of '.so'.
 
     """
+
     def link_dylib_lib(self, objects, output_libname, output_dir=None,
                        libraries=None, library_dirs=None,
                        runtime_library_dirs=None, export_symbols=None,
@@ -168,12 +168,12 @@ elif not LIB_FILES_EXIST:
     # copy files from build to library folder
     shutil.copy(os.path.join(BUILD_DIR, SOLPOSAM_LIB_FILE), NAME)
     shutil.copy(os.path.join(BUILD_DIR, SPECTRL2_LIB_FILE), NAME)
-    # test libraries
-    test_cdlls.test_solposAM()
-    test_cdlls.test_spectrl2()
     LIB_FILES_EXIST = True
 if LIB_FILES_EXIST and 'sdist' not in sys.argv:
     PKG_DATA += [SOLPOSAM_LIB_FILE, SPECTRL2_LIB_FILE]
+
+# Tests will require these packages
+test_requires = ['numpy', 'nose']
 
 setup(
     name='SolarUtils',
@@ -187,5 +187,6 @@ setup(
     platforms=['win32', 'linux', 'linux2', 'darwin'],
     packages=[NAME, TESTS],
     package_data={NAME: PKG_DATA, TESTS: TEST_DATA},
-    ext_modules=[DUMMY]
+    ext_modules=[DUMMY],
+    extras_require={'testing': test_requires}
 )

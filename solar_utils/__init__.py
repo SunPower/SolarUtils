@@ -9,8 +9,8 @@ Do Not Distribute
 
 from solar_utils.core import solposAM, spectrl2
 
-__version__ = '0.2.2'
-__release__ = 'Bailiffs'
+__version__ = '0.2.3'
+__release__ = 'Beet'
 __author__ = 'Mark Mikofski'
 __email__ = 'mark.mikofski@sunpowercorp.com'
 __url__ = 'https://github.com/SunPower/SolarUtils'

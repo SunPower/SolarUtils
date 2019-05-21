@@ -19,6 +19,8 @@
 #define DllExport
 #endif
 
+#define COUNT 8760
+
 // solposAM
 // Inputs:
 //      location: (float*) [longitude, latitude, UTC-timezone]
@@ -101,4 +103,33 @@ DllExport long solposAM( float *location, int *datetime, float *weather,
 
     return retval;
 
+}
+
+
+DllExport long get_solpos8760( float *location, float *weather,
+                               int times[COUNT][6], float retval[COUNT][4] )
+{
+    const int count = COUNT;
+    int datetime[6];
+    float angles[2];
+    float airmass[2];
+    int settings[2];
+    float orientation[2];
+    float shadowband[3];
+    long err_code;
+    for (size_t i=0; i<count; i++){
+        datetime[0] = times[i][0];
+        datetime[1] = times[i][1];
+        datetime[2] = times[i][2];
+        datetime[3] = times[i][3];
+        datetime[4] = times[i][4];
+        datetime[5] = times[i][5];
+        err_code = solposAM( location, datetime, weather, angles, airmass,
+                             settings, orientation, shadowband );
+        retval[i][0] = angles[0];
+        retval[i][1] = angles[1];
+        retval[i][2] = airmass[0];
+        retval[i][3] = airmass[1];
+    }
+    return err_code;
 }

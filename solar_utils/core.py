@@ -32,6 +32,8 @@ else:
 SOLPOSAMDLL = os.path.join(_DIRNAME, SOLPOSAM)
 SPECTRL2DLL = os.path.join(_DIRNAME, SPECTRL2)
 
+COUNT = 8760
+
 
 def _int2bits(err_code):
     """
@@ -41,6 +43,38 @@ def _int2bits(err_code):
     :returns: log(err_code, 2)
     """
     return int(math.log(err_code, 2))
+
+
+def get_solpos8760(location, weather, datetime):
+    """
+    """
+    # load the DLL
+    solposAM_dll = ctypes.cdll.LoadLibrary(SOLPOSAMDLL)
+    _get_solpos8760 = solposAM_dll.get_solpos8760
+    # cast Python types as ctypes
+    _location = (ctypes.c_float * 3)(*location)
+    _weather = (ctypes.c_float * 2)(*weather)
+    _datetime = ((ctypes.c_int * 6) * COUNT)(*datetime)
+    # allocate space for results
+    retval = ((ctypes.c_float * 4) * COUNT)()
+    err_code = _get_solpos8760(_location, _weather, _datetime, retval)
+    if err_code == 0:
+        return retval
+    else:
+        zenith, azimuth, airmass_relative, airmass_absolute = zip(*retval)
+        angles = zip(zenith, azimuth)
+        airmass = zip(airmass_relative, airmass_absolute)
+        # convert err_code to bits
+        _code = _int2bits(err_code)
+        data = {'location': location,
+                'datetime': datetime,
+                'weather': weather,
+                'angles': angles,
+                'airmass': [0]*2,
+                'settings': [0]*2,
+                'orientation': [0]*2,
+                'shadowband': [0]*3}
+        raise SOLPOS_Error(_code, data)
 
 
 def solposAM(location, datetime, weather):

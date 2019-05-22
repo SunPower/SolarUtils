@@ -45,7 +45,7 @@ def _int2bits(err_code):
     return int(math.log(err_code, 2))
 
 
-def get_solpos8760(location, weather, datetime):
+def get_solpos8760(location, datetime, weather):
     """
     """
     # load the DLL
@@ -53,11 +53,11 @@ def get_solpos8760(location, weather, datetime):
     _get_solpos8760 = solposAM_dll.get_solpos8760
     # cast Python types as ctypes
     _location = (ctypes.c_float * 3)(*location)
-    _weather = (ctypes.c_float * 2)(*weather)
     _datetime = ((ctypes.c_int * 6) * COUNT)(*datetime)
+    _weather = (ctypes.c_float * 2)(*weather)
     # allocate space for results
     retval = ((ctypes.c_float * 4) * COUNT)()
-    err_code = _get_solpos8760(_location, _weather, _datetime, retval)
+    err_code = _get_solpos8760(_location, _datetime, _weather, retval)
     if err_code == 0:
         return retval
     else:
@@ -69,8 +69,8 @@ def get_solpos8760(location, weather, datetime):
         data = {'location': location,
                 'datetime': datetime,
                 'weather': weather,
-                'angles': angles,
-                'airmass': [0]*2,
+                'angles': angles[-1],
+                'airmass': airmass[-1],
                 'settings': [0]*2,
                 'orientation': [0]*2,
                 'shadowband': [0]*3}

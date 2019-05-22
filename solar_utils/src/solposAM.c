@@ -20,6 +20,7 @@
 #endif
 
 #define COUNT 8760
+const int count = COUNT;
 
 // solposAM
 // Inputs:
@@ -32,9 +33,9 @@
 //      settings: (int*): [daynum, interval]
 //      orientation: (float*) [tilt, aspect] (degrees)
 //      shadowband: (float*): [width, radiation, sky]
-DllExport long solposAM( float *location, int *datetime, float *weather,
-    float *angles, float *airmass, int *settings, float *orientation,
-    float *shadowband )
+DllExport long solposAM( float location[3], int datetime[6], float weather[2],
+    float angles[2], float airmass[2], int settings[2], float orientation[2],
+    float shadowband[3] )
 {
     
     /* variable declarations */
@@ -106,10 +107,9 @@ DllExport long solposAM( float *location, int *datetime, float *weather,
 }
 
 
-DllExport long get_solpos8760( float *location, float *weather,
-                               int times[COUNT][6], float retval[COUNT][4] )
+DllExport long get_solpos8760( float location[3], int times[COUNT][6],
+                               float weather[2], float retval[COUNT][4] )
 {
-    const int count = COUNT;
     int datetime[6];
     float angles[2];
     float airmass[2];

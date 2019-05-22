@@ -106,30 +106,39 @@ DllExport long solposAM( float location[3], int datetime[6], float weather[2],
 
 }
 
-
-DllExport long get_solpos8760( float location[3], int times[COUNT][6],
-                               float weather[2], float retval[COUNT][4] )
+// get_solpos8760
+DllExport long get_solpos8760( float location[3], int datetimes[COUNT][6],
+    float weather[2], float angles[COUNT][2], float airmass[COUNT][2],
+    int settings[COUNT][2], float orientation[COUNT][2],
+    float shadowband[COUNT][3] )
 {
     int datetime[6];
-    float angles[2];
-    float airmass[2];
-    int settings[2];
-    float orientation[2];
-    float shadowband[3];
+    float rangles[2];
+    float rairmass[2];
+    int rsettings[2];
+    float rorientation[2];
+    float rshadowband[3];
     long err_code;
     for (size_t i=0; i<count; i++){
-        datetime[0] = times[i][0];
-        datetime[1] = times[i][1];
-        datetime[2] = times[i][2];
-        datetime[3] = times[i][3];
-        datetime[4] = times[i][4];
-        datetime[5] = times[i][5];
-        err_code = solposAM( location, datetime, weather, angles, airmass,
-                             settings, orientation, shadowband );
-        retval[i][0] = angles[0];
-        retval[i][1] = angles[1];
-        retval[i][2] = airmass[0];
-        retval[i][3] = airmass[1];
+        datetime[0] = datetimes[i][0];
+        datetime[1] = datetimes[i][1];
+        datetime[2] = datetimes[i][2];
+        datetime[3] = datetimes[i][3];
+        datetime[4] = datetimes[i][4];
+        datetime[5] = datetimes[i][5];
+        err_code = solposAM( location, datetime, weather, rangles, rairmass,
+                             rsettings, rorientation, rshadowband );
+        angles[i][0] = rangles[0];
+        angles[i][1] = rangles[1];
+        airmass[i][0] = rairmass[0];
+        airmass[i][1] = rairmass[1];
+        settings[i][0] = rsettings[0];
+        settings[i][1] = rsettings[1];
+        orientation[i][0] = rorientation[0];
+        orientation[i][1] = rorientation[1];
+        shadowband[i][0] = rshadowband[0];
+        shadowband[i][1] = rshadowband[1];
+        shadowband[i][2] = rshadowband[2];
     }
     return err_code;
 }

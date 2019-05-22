@@ -45,7 +45,7 @@ def _int2bits(err_code):
     return int(math.log(err_code, 2))
 
 
-def get_solpos8760(location, datetime, weather):
+def get_solpos8760(location, datetimes, weather):
     """
     """
     # load the DLL
@@ -53,27 +53,30 @@ def get_solpos8760(location, datetime, weather):
     _get_solpos8760 = solposAM_dll.get_solpos8760
     # cast Python types as ctypes
     _location = (ctypes.c_float * 3)(*location)
-    _datetime = ((ctypes.c_int * 6) * COUNT)(*datetime)
+    _datetime = ((ctypes.c_int * 6) * COUNT)(*datetimes)
     _weather = (ctypes.c_float * 2)(*weather)
     # allocate space for results
-    retval = ((ctypes.c_float * 4) * COUNT)()
-    err_code = _get_solpos8760(_location, _datetime, _weather, retval)
+    angles = ((ctypes.c_float * 2) * COUNT)()
+    airmass = ((ctypes.c_float * 2) * COUNT)()
+    settings = ((ctypes.c_int * 2) * COUNT)()
+    orientation = ((ctypes.c_float * 2) * COUNT)()
+    shadowband = ((ctypes.c_float * 3) * COUNT)()
+    err_code = _get_solpos8760(
+        _location, _datetime, _weather, angles, airmass, settings, orientation,
+        shadowband)
     if err_code == 0:
-        return retval
+        return angles, airmass
     else:
-        zenith, azimuth, airmass_relative, airmass_absolute = zip(*retval)
-        angles = zip(zenith, azimuth)
-        airmass = zip(airmass_relative, airmass_absolute)
         # convert err_code to bits
         _code = _int2bits(err_code)
         data = {'location': location,
-                'datetime': datetime,
+                'datetime': datetimes[-1],
                 'weather': weather,
                 'angles': angles[-1],
                 'airmass': airmass[-1],
-                'settings': [0]*2,
-                'orientation': [0]*2,
-                'shadowband': [0]*3}
+                'settings': settings[-1],
+                'orientation': orientation[-1],
+                'shadowband': shadowband[-1]}
         raise SOLPOS_Error(_code, data)
 
 

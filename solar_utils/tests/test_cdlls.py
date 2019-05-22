@@ -35,8 +35,8 @@ def test_get_solpos8760():
     times = [
         (datetime(2017,1,1,0,0,0)+timedelta(hours=h)).timetuple()[:6]
         for h in range(8760)]
-    x = get_solpos8760(location, times, weather)
-    y = np.array([
+    x, y = get_solpos8760(location, times, weather)
+    z = np.array([
         [ 98.96697  , 248.12735  ,  -1.       ,  -1.       ],
         [ 98.96697  , 111.86818  ,  -1.       ,  -1.       ],
         [ 98.96697  , 111.86365  ,  -1.       ,  -1.       ],
@@ -62,7 +62,8 @@ def test_get_solpos8760():
         [ 98.96697  , 248.22736  ,  -1.       ,  -1.       ],
         [ 98.96697  , 248.23221  ,  -1.       ,  -1.       ]],
         dtype=np.float32)
-    assert np.allclose(x[:24], y)
+    assert np.allclose(x[:24], z[:24,:2])
+    assert np.allclose(y[:24], z[:24,2:])
 
 
 def test_solposAM():

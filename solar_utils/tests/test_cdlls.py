@@ -64,6 +64,22 @@ def test_get_solpos8760():
         dtype=np.float32)
     assert np.allclose(x[:24], z[:24,:2])
     assert np.allclose(y[:24], z[:24,2:])
+    # test LOCATION
+    weather = [1015.62055, 40.0]
+    try:
+        x, y = get_solpos8760(location, times, weather)
+    except SOLPOS_Error as err:
+        assert err.args[0] == 'S_SECOND_ERROR'
+    location = [35.56836, -119.2022, -8.0]
+    # test DATETIMES
+    times = [list(ts) for ts in times]
+    times[10][5] = 3248273
+    times = [tuple(ts) for ts in times]
+    location = [1135.56836, -119.2022, -8.0]
+    try:
+        x, y = get_solpos8760(location, times, weather)
+    except SOLPOS_Error as err:
+        assert err.args[0] == 'S_LAT_ERROR'
 
 
 def test_solposAM():

@@ -61,23 +61,28 @@ def get_solpos8760(location, datetimes, weather):
     settings = ((ctypes.c_int * 2) * COUNT)()
     orientation = ((ctypes.c_float * 2) * COUNT)()
     shadowband = ((ctypes.c_float * 3) * COUNT)()
-    err_code = _get_solpos8760(
+    err_code = (ctypes.c_long * COUNT)()
+    # call
+    retval = _get_solpos8760(
         _location, _datetime, _weather, angles, airmass, settings, orientation,
-        shadowband)
-    if err_code == 0:
+        shadowband, err_code)
+    if (retval != 0): raise RuntimeError('solposAM did not execute')
+    if all(ec == 0 for ec in err_code):
         return angles, airmass
     else:
-        # convert err_code to bits
-        _code = _int2bits(err_code)
-        data = {'location': location,
-                'datetime': datetimes[-1],
-                'weather': weather,
-                'angles': angles[-1],
-                'airmass': airmass[-1],
-                'settings': settings[-1],
-                'orientation': orientation[-1],
-                'shadowband': shadowband[-1]}
-        raise SOLPOS_Error(_code, data)
+        for n, ec in enumerate(err_code):
+            if ec == 0: continue
+            # convert err_code to bits
+            _code = _int2bits(ec)
+            data = {'location': location,
+                    'datetime': datetimes[n],
+                    'weather': weather,
+                    'angles': angles[n],
+                    'airmass': airmass[n],
+                    'settings': settings[n],
+                    'orientation': orientation[n],
+                    'shadowband': shadowband[n]}
+            raise SOLPOS_Error(_code, data)
 
 
 def solposAM(location, datetime, weather):

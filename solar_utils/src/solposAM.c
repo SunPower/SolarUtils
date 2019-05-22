@@ -110,12 +110,11 @@ DllExport long solposAM( float location[3], int datetime[6], float weather[2],
 DllExport long get_solpos8760( float location[3], int datetimes[COUNT][6],
     float weather[2], float angles[COUNT][2], float airmass[COUNT][2],
     int settings[COUNT][2], float orientation[COUNT][2],
-    float shadowband[COUNT][3] )
+    float shadowband[COUNT][3], long err_code[COUNT])
 {
-    long err_code;
     for (size_t i=0; i<count; i++){
-        err_code = solposAM( location, datetimes[i], weather, angles[i],
+        err_code[i] = solposAM( location, datetimes[i], weather, angles[i],
             airmass[i], settings[i], orientation[i], shadowband[i] );
     }
-    return err_code;
+    return 0;
 }

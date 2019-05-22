@@ -9,12 +9,10 @@ This code uses nose. Enter the following in a CMD shell::
 
     $ nosetests --verbose
 
-2013 SunPower Corp.
-Confidential & Proprietary
-Do Not Distribute
+2013, 2019 SunPower Corp.
 """
 
-from datetime import datetime, timedelta
+import datetime as pydatetime
 import json
 import numpy as np
 import os
@@ -32,10 +30,7 @@ RELDIFF = lambda x, x0: np.abs(x - x0) / x0
 def test_get_solpos8760():
     location = [35.56836, -119.2022, -8.0]
     weather = [1015.62055, 40.0]
-    times = [
-        (datetime(2017,1,1,0,0,0)+timedelta(hours=h)).timetuple()[:6]
-        for h in range(8760)]
-    x, y = get_solpos8760(location, times, weather)
+    x, y = get_solpos8760(location, 2017, weather)
     z = np.array([
         [ 98.96697  , 248.12735  ,  -1.       ,  -1.       ],
         [ 98.96697  , 111.86818  ,  -1.       ,  -1.       ],
@@ -64,29 +59,14 @@ def test_get_solpos8760():
         dtype=np.float32)
     assert np.allclose(x[:24], z[:24,:2])
     assert np.allclose(y[:24], z[:24,2:])
-    # test LOCATION
-    weather = [1015.62055, 40.0]
-    try:
-        x, y = get_solpos8760(location, times, weather)
-    except SOLPOS_Error as err:
-        assert err.args[0] == 'S_SECOND_ERROR'
-    location = [35.56836, -119.2022, -8.0]
-    # test DATETIMES
-    times = [list(ts) for ts in times]
-    times[10][5] = 3248273
-    times = [tuple(ts) for ts in times]
-    location = [1135.56836, -119.2022, -8.0]
-    try:
-        x, y = get_solpos8760(location, times, weather)
-    except SOLPOS_Error as err:
-        assert err.args[0] == 'S_LAT_ERROR'
 
 
 def test_get_solposAM():
     location = [35.56836, -119.2022, -8.0]
     weather = [1015.62055, 40.0]
     times = [
-        (datetime(2017,1,1,0,0,0)+timedelta(hours=h)).timetuple()[:6]
+        (pydatetime.datetime(2017, 1, 1, 0, 0, 0)
+         + pydatetime.timedelta(hours=h)).timetuple()[:6]
         for h in range(1000)]
     x, y = get_solposAM(location, times, weather)
     z = np.array([
@@ -118,21 +98,20 @@ def test_get_solposAM():
     assert np.allclose(x[:24], z[:24,:2])
     assert np.allclose(y[:24], z[:24,2:])
     # test LOCATION
-    weather = [1015.62055, 40.0]
-    try:
-        x, y = get_solposAM(location, times, weather)
-    except SOLPOS_Error as err:
-        assert err.args[0] == 'S_SECOND_ERROR'
-    location = [35.56836, -119.2022, -8.0]
-    # test DATETIMES
-    times = [list(ts) for ts in times]
-    times[10][5] = 3248273
-    times = [tuple(ts) for ts in times]
     location = [1135.56836, -119.2022, -8.0]
     try:
         x, y = get_solposAM(location, times, weather)
     except SOLPOS_Error as err:
         assert err.args[0] == 'S_LAT_ERROR'
+    location = [35.56836, -119.2022, -8.0]
+    # test DATETIMES
+    times = [list(ts) for ts in times]
+    times[10][5] = 3248273
+    times = [tuple(ts) for ts in times]
+    try:
+        x, y = get_solposAM(location, times, weather)
+    except SOLPOS_Error as err:
+        assert err.args[0] == 'S_SECOND_ERROR'
 
 
 def test_solposAM():

@@ -1,6 +1,9 @@
 Changes
 =======
 
+For more recent changes, please see
+`GitHub Releases <https://github.com/SunPower/SolarUtils/releases>`_.
+
 v0.2.1 - Bartenders (2016-07-11)
 --------------------------------
 * add documentation

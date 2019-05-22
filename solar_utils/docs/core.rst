@@ -30,6 +30,14 @@ that imports :data:`SOLPOSAMDLL` and exports functions called by
 
 .. data:: SPECTRL2DLL
 
+get_solpos8760
+--------------
+.. autofunction:: get_solpos8760
+
+get_solposAM
+------------
+.. autofunction:: get_solposAM
+
 solposAM
 --------
 .. autofunction:: solposAM

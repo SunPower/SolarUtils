@@ -85,6 +85,47 @@ def get_solpos8760(location, datetimes, weather):
             raise SOLPOS_Error(_code, data)
 
 
+def get_solposAM(location, datetimes, weather):
+    """
+    """
+    count = len(datetimes)
+    # load the DLL
+    solposAM_dll = ctypes.cdll.LoadLibrary(SOLPOSAMDLL)
+    _get_solposAM = solposAM_dll.get_solposAM
+    # cast Python types as ctypes
+    _location = (ctypes.c_float * 3)(*location)
+    _datetime = ((ctypes.c_int * 6) * count)(*datetimes)
+    _weather = (ctypes.c_float * 2)(*weather)
+    # allocate space for results
+    angles = ((ctypes.c_float * 2) * count)()
+    airmass = ((ctypes.c_float * 2) * count)()
+    settings = ((ctypes.c_int * 2) * count)()
+    orientation = ((ctypes.c_float * 2) * count)()
+    shadowband = ((ctypes.c_float * 3) * count)()
+    err_code = (ctypes.c_long * count)()
+    # call
+    retval = _get_solposAM(
+        _location, _datetime, _weather, count, angles, airmass, settings,
+        orientation, shadowband, err_code)
+    if (retval != 0): raise RuntimeError('solposAM did not execute')
+    if all(ec == 0 for ec in err_code):
+        return angles, airmass
+    else:
+        for n, ec in enumerate(err_code):
+            if ec == 0: continue
+            # convert err_code to bits
+            _code = _int2bits(ec)
+            data = {'location': location,
+                    'datetime': datetimes[n],
+                    'weather': weather,
+                    'angles': angles[n],
+                    'airmass': airmass[n],
+                    'settings': settings[n],
+                    'orientation': orientation[n],
+                    'shadowband': shadowband[n]}
+            raise SOLPOS_Error(_code, data)
+
+
 def solposAM(location, datetime, weather):
     """
     Calculate solar position and air mass by calling functions exported by

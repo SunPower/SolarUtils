@@ -112,33 +112,10 @@ DllExport long get_solpos8760( float location[3], int datetimes[COUNT][6],
     int settings[COUNT][2], float orientation[COUNT][2],
     float shadowband[COUNT][3] )
 {
-    int datetime[6];
-    float rangles[2];
-    float rairmass[2];
-    int rsettings[2];
-    float rorientation[2];
-    float rshadowband[3];
     long err_code;
     for (size_t i=0; i<count; i++){
-        datetime[0] = datetimes[i][0];
-        datetime[1] = datetimes[i][1];
-        datetime[2] = datetimes[i][2];
-        datetime[3] = datetimes[i][3];
-        datetime[4] = datetimes[i][4];
-        datetime[5] = datetimes[i][5];
-        err_code = solposAM( location, datetime, weather, rangles, rairmass,
-                             rsettings, rorientation, rshadowband );
-        angles[i][0] = rangles[0];
-        angles[i][1] = rangles[1];
-        airmass[i][0] = rairmass[0];
-        airmass[i][1] = rairmass[1];
-        settings[i][0] = rsettings[0];
-        settings[i][1] = rsettings[1];
-        orientation[i][0] = rorientation[0];
-        orientation[i][1] = rorientation[1];
-        shadowband[i][0] = rshadowband[0];
-        shadowband[i][1] = rshadowband[1];
-        shadowband[i][2] = rshadowband[2];
+        err_code = solposAM( location, datetimes[i], weather, angles[i],
+            airmass[i], settings[i], orientation[i], shadowband[i] );
     }
     return err_code;
 }

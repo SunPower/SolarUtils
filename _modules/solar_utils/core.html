@@ -1,44 +1,34 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>solar_utils.core &mdash; SolarUtils Bartenders documentation</title>
-    
+    <meta charset="utf-8" />
+    <title>solar_utils.core &#8212; SolarUtils Carpenters documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     'Bartenders',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
-    <link rel="top" title="SolarUtils Bartenders documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
+  
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <h1>Source code for solar_utils.core</h1><div class="highlight"><pre>
@@ -50,16 +40,17 @@
 <span class="sd">`NREL RREDC Solar Resource Models and Tools</span>
 <span class="sd">&lt;http://www.nrel.gov/rredc/models_tools.html&gt;`_</span>
 
-<span class="sd">2013 SunPower Corp.</span>
+<span class="sd">2013, 2019 SunPower Corp.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">pydatetime</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">solar_utils.exceptions</span> <span class="kn">import</span> <span class="n">SOLPOS_Error</span><span class="p">,</span> <span class="n">SPECTRL2_Error</span>
+<span class="kn">from</span> <span class="nn">solar_utils.exceptions</span> <span class="k">import</span> <span class="n">SOLPOS_Error</span><span class="p">,</span> <span class="n">SPECTRL2_Error</span>
 
-<span class="n">_DIRNAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span>
+<span class="n">_DIRNAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
 <span class="n">PLATFORM</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span>
 <span class="k">if</span> <span class="n">PLATFORM</span> <span class="o">==</span> <span class="s1">&#39;win32&#39;</span><span class="p">:</span>
     <span class="n">SOLPOSAM</span> <span class="o">=</span> <span class="s1">&#39;solposAM.dll&#39;</span>
@@ -85,6 +76,95 @@
 <span class="sd">    :returns: log(err_code, 2)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">err_code</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="get_solpos8760"><a class="viewcode-back" href="../../core.html#solar_utils.core.get_solpos8760">[docs]</a><span class="k">def</span> <span class="nf">get_solpos8760</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">weather</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get SOLPOS hourly calculation for specified non-leap year.</span>
+
+<span class="sd">    :param location: [latitude, longitude, UTC-timezone]</span>
+<span class="sd">    :type location: float</span>
+<span class="sd">    :param year: a non-leap year</span>
+<span class="sd">    :type year: int</span>
+<span class="sd">    :param weather: [ambient-pressure (mB), ambient-temperature (C)]</span>
+<span class="sd">    :type weather: float</span>
+<span class="sd">    :returns: angles [degrees], airmass [atm]</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raises: :exc:`~solar_utils.exceptions.SOLPOS_Error`</span>
+
+<span class="sd">    **Example:**</span>
+
+<span class="sd">    &gt;&gt;&gt; location = [35.56836, -119.2022, -8.0]</span>
+<span class="sd">    &gt;&gt;&gt; weather = [1015.62055, 40.0]</span>
+<span class="sd">    &gt;&gt;&gt; angles, airmass = get_solpos8760(location, 2013, weather)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">datetimes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">pydatetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+         <span class="o">+</span> <span class="n">pydatetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="n">h</span><span class="p">))</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()[:</span><span class="mi">6</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8760</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">get_solposAM</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">datetimes</span><span class="p">,</span> <span class="n">weather</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_solposAM"><a class="viewcode-back" href="../../core.html#solar_utils.core.get_solposAM">[docs]</a><span class="k">def</span> <span class="nf">get_solposAM</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">datetimes</span><span class="p">,</span> <span class="n">weather</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get SOLPOS hourly calculation for sequence of datetimes.</span>
+
+<span class="sd">    :param location: [latitude, longitude, UTC-timezone]</span>
+<span class="sd">    :type location: float</span>
+<span class="sd">    :param datetimes: [year, month, day, hour, minute, second]</span>
+<span class="sd">    :type datetimes: int</span>
+<span class="sd">    :param weather: [ambient-pressure (mB), ambient-temperature (C)]</span>
+<span class="sd">    :type weather: float</span>
+<span class="sd">    :returns: angles [degrees], airmass [atm]</span>
+<span class="sd">    :rtype: float</span>
+<span class="sd">    :raises: :exc:`~solar_utils.exceptions.SOLPOS_Error`</span>
+
+<span class="sd">    **Example:**</span>
+
+<span class="sd">    &gt;&gt;&gt; location = [35.56836, -119.2022, -8.0]</span>
+<span class="sd">    &gt;&gt;&gt; datetimes = [</span>
+<span class="sd">    ...     (datetime.datetime(2013, 1, 1, 0, 0, 0)</span>
+<span class="sd">    ...      + datetime.timedelta(hours=h)).timetuple()[:6]</span>
+<span class="sd">    ...     for h in range(1000)]</span>
+<span class="sd">    &gt;&gt;&gt; weather = [1015.62055, 40.0]</span>
+<span class="sd">    &gt;&gt;&gt; angles, airmass = get_solposAM(location, datetimes, weather)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">datetimes</span><span class="p">)</span>
+    <span class="c1"># load the DLL</span>
+    <span class="n">solposAM_dll</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">cdll</span><span class="o">.</span><span class="n">LoadLibrary</span><span class="p">(</span><span class="n">SOLPOSAMDLL</span><span class="p">)</span>
+    <span class="n">_get_solposAM</span> <span class="o">=</span> <span class="n">solposAM_dll</span><span class="o">.</span><span class="n">get_solposAM</span>
+    <span class="c1"># cast Python types as ctypes</span>
+    <span class="n">_location</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)(</span><span class="o">*</span><span class="n">location</span><span class="p">)</span>
+    <span class="n">_datetime</span> <span class="o">=</span> <span class="p">((</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span> <span class="o">*</span> <span class="mi">6</span><span class="p">)</span> <span class="o">*</span> <span class="n">count</span><span class="p">)(</span><span class="o">*</span><span class="n">datetimes</span><span class="p">)</span>
+    <span class="n">_weather</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)(</span><span class="o">*</span><span class="n">weather</span><span class="p">)</span>
+    <span class="c1"># allocate space for results</span>
+    <span class="n">angles</span> <span class="o">=</span> <span class="p">((</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">count</span><span class="p">)()</span>
+    <span class="n">airmass</span> <span class="o">=</span> <span class="p">((</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">count</span><span class="p">)()</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">((</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">count</span><span class="p">)()</span>
+    <span class="n">orientation</span> <span class="o">=</span> <span class="p">((</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">count</span><span class="p">)()</span>
+    <span class="n">shadowband</span> <span class="o">=</span> <span class="p">((</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_float</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">count</span><span class="p">)()</span>
+    <span class="n">err_code</span> <span class="o">=</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_long</span> <span class="o">*</span> <span class="n">count</span><span class="p">)()</span>
+    <span class="c1"># call</span>
+    <span class="n">retval</span> <span class="o">=</span> <span class="n">_get_solposAM</span><span class="p">(</span>
+        <span class="n">_location</span><span class="p">,</span> <span class="n">_datetime</span><span class="p">,</span> <span class="n">_weather</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">angles</span><span class="p">,</span> <span class="n">airmass</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span>
+        <span class="n">orientation</span><span class="p">,</span> <span class="n">shadowband</span><span class="p">,</span> <span class="n">err_code</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">retval</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span> <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;solposAM did not execute&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">ec</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">ec</span> <span class="ow">in</span> <span class="n">err_code</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">angles</span><span class="p">,</span> <span class="n">airmass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">ec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">err_code</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ec</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">continue</span>
+            <span class="c1"># convert err_code to bits</span>
+            <span class="n">_code</span> <span class="o">=</span> <span class="n">_int2bits</span><span class="p">(</span><span class="n">ec</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="n">location</span><span class="p">,</span>
+                    <span class="s1">&#39;datetime&#39;</span><span class="p">:</span> <span class="n">datetimes</span><span class="p">[</span><span class="n">n</span><span class="p">],</span>
+                    <span class="s1">&#39;weather&#39;</span><span class="p">:</span> <span class="n">weather</span><span class="p">,</span>
+                    <span class="s1">&#39;angles&#39;</span><span class="p">:</span> <span class="n">angles</span><span class="p">[</span><span class="n">n</span><span class="p">],</span>
+                    <span class="s1">&#39;airmass&#39;</span><span class="p">:</span> <span class="n">airmass</span><span class="p">[</span><span class="n">n</span><span class="p">],</span>
+                    <span class="s1">&#39;settings&#39;</span><span class="p">:</span> <span class="n">settings</span><span class="p">[</span><span class="n">n</span><span class="p">],</span>
+                    <span class="s1">&#39;orientation&#39;</span><span class="p">:</span> <span class="n">orientation</span><span class="p">[</span><span class="n">n</span><span class="p">],</span>
+                    <span class="s1">&#39;shadowband&#39;</span><span class="p">:</span> <span class="n">shadowband</span><span class="p">[</span><span class="n">n</span><span class="p">]}</span>
+            <span class="k">raise</span> <span class="n">SOLPOS_Error</span><span class="p">(</span><span class="n">_code</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="solposAM"><a class="viewcode-back" href="../../core.html#solar_utils.core.solposAM">[docs]</a><span class="k">def</span> <span class="nf">solposAM</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">weather</span><span class="p">):</span>
@@ -256,13 +336,37 @@
 </pre></div>
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
             <p class="logo"><a href="../../index.html">
               <img class="logo" src="../../_static/sp_2014_logo_black_orange_rgb.png" alt="Logo"/>
-            </a></p><div class="relations">
+            </a></p>
+<h1 class="logo"><a href="../../index.html">SolarUtils</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SunPower&repo=SolarUtils&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../exceptions.html">Exceptions</a></li>
+</ul>
+
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../../index.html">Documentation overview</a><ul>
@@ -273,14 +377,22 @@
 </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -289,8 +401,8 @@
       &copy;2016, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 

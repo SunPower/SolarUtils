@@ -1,49 +1,40 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Welcome to SolarUtils’s documentation! &mdash; SolarUtils Bartenders documentation</title>
-    
+    <meta charset="utf-8" />
+    <title>Welcome to SolarUtils’s documentation! &#8212; SolarUtils Carpenters documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'Bartenders',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="SolarUtils Bartenders documentation" href="#" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Core" href="core.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
+  
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="welcome-to-solarutils-s-documentation">
-<h1>Welcome to SolarUtils&#8217;s documentation!<a class="headerlink" href="#welcome-to-solarutils-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p><strong>Version</strong> 0.2.1 (Bartenders)</p>
+<h1>Welcome to SolarUtils’s documentation!<a class="headerlink" href="#welcome-to-solarutils-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p><strong>Version</strong> 0.3 (Carpenters)</p>
 <a class="reference external image-reference" href="https://travis-ci.org/SunPower/SolarUtils"><img alt="https://travis-ci.org/SunPower/SolarUtils.svg?branch=master" src="https://travis-ci.org/SunPower/SolarUtils.svg?branch=master" /></a>
 <p>SolarUtils is set of Python wrappers around the publicly available
 <a class="reference external" href="http://www.nrel.gov/">NREL</a>
@@ -55,14 +46,14 @@ of this software implies acceptance of the terms.</p>
 </div>
 <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>Use <code class="docutils literal"><span class="pre">pip</span></code> to install
+<p>Use <code class="docutils literal notranslate"><span class="pre">pip</span></code> to install
 <a class="reference external" href="https://pypi.python.org/pypi/SolarUtils">SolarUtils from the PyPI</a>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">SolarUtils</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">SolarUtils</span>
 </pre></div>
 </div>
 <p>You can also download a source distribution from PyPI or clone the repository
-and use Python <code class="docutils literal"><span class="pre">distutils</span></code>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+and use Python <code class="docutils literal notranslate"><span class="pre">distutils</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
 </pre></div>
 </div>
 </div>
@@ -71,9 +62,9 @@ and use Python <code class="docutils literal"><span class="pre">distutils</span>
 <p>SolarUtils has no requirements for usage however for installation, testing and
 to build the documentaiton you will need the following pacakges:</p>
 <ul class="simple">
-<li>NumPy</li>
-<li>PyTest</li>
-<li>Sphinx</li>
+<li><p>NumPy</p></li>
+<li><p>PyTest</p></li>
+<li><p>Sphinx</p></li>
 </ul>
 </div>
 <div class="section" id="usage">
@@ -84,7 +75,7 @@ and
 for more detail.</p>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solar_utils</span> <span class="k">import</span> <span class="o">*</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">solar_utils</span> <span class="k">import</span> <span class="o">*</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">location</span> <span class="o">=</span> <span class="p">[</span><span class="mf">35.56836</span><span class="p">,</span> <span class="o">-</span><span class="mf">119.2022</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2013</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
@@ -102,7 +93,7 @@ for more detail.</p>
 <span class="go">1.0379053354263306]</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">units</span> <span class="o">=</span> <span class="mi">1</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">units</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">location</span> <span class="o">=</span> <span class="p">[</span><span class="mf">33.65</span><span class="p">,</span> <span class="o">-</span><span class="mf">84.43</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1999</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">37</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">weather</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1006.0</span><span class="p">,</span> <span class="mf">27.0</span><span class="p">]</span>
@@ -130,60 +121,64 @@ for more detail.</p>
 </div>
 <div class="section" id="changes">
 <h1>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h1>
+<p>For more recent changes, please see
+<a class="reference external" href="https://github.com/SunPower/SolarUtils/releases">GitHub Releases</a>.</p>
 <div class="section" id="v0-2-1-bartenders-2016-07-11">
 <h2>v0.2.1 - Bartenders (2016-07-11)<a class="headerlink" href="#v0-2-1-bartenders-2016-07-11" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>add documentation</li>
-<li>add BSD 3-clause license</li>
-<li>add NREL license and disclaimers</li>
-<li>fix #5 - Wheel made after <code class="docutils literal"><span class="pre">build_ext</span></code> doesn&#8217;t contain libs</li>
+<li><p>add documentation</p></li>
+<li><p>add BSD 3-clause license</p></li>
+<li><p>add NREL license and disclaimers</p></li>
+<li><p>fix #5 - Wheel made after <code class="docutils literal notranslate"><span class="pre">build_ext</span></code> doesn’t contain libs</p></li>
 </ul>
 </div>
 <div class="section" id="v0-2-bakers-2016-02-23">
 <h2>v0.2 - Bakers (2016-02-23)<a class="headerlink" href="#v0-2-bakers-2016-02-23" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>one source for all platforms</li>
+<li><p>one source for all platforms</p></li>
 </ul>
 </div>
 <div class="section" id="v0-1-4-artists-2016-02-22">
 <h2>v0.1.4 - Artists (2016-02-22)<a class="headerlink" href="#v0-1-4-artists-2016-02-22" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>fixes <code class="docutils literal"><span class="pre">&#64;rpath</span></code> issue with darwin</li>
+<li><p>fixes <code class="docutils literal notranslate"><span class="pre">&#64;rpath</span></code> issue with darwin</p></li>
 </ul>
 </div>
 <div class="section" id="v0-1-3-actuaries-2016-02-19">
 <h2>v0.1.3 - Actuaries (2016-02-19)<a class="headerlink" href="#v0-1-3-actuaries-2016-02-19" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>compatibility with Python-3</li>
+<li><p>compatibility with Python-3</p></li>
 </ul>
 </div>
 <div class="section" id="v0-1-2-animal-trainers-2016-02-12">
 <h2>v0.1.2 - Animal Trainers (2016-02-12)<a class="headerlink" href="#v0-1-2-animal-trainers-2016-02-12" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>fix package names not platform specific</li>
-<li>change linux to linux2 everywhere</li>
+<li><p>fix package names not platform specific</p></li>
+<li><p>change linux to linux2 everywhere</p></li>
 </ul>
 </div>
 <div class="section" id="v0-1-1-actors-2016-02-12">
 <h2>v0.1.1 - Actors (2016-02-12)<a class="headerlink" href="#v0-1-1-actors-2016-02-12" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Linux x86-64 wheel with binaries in addition to MS Windows x86-64 wheel</li>
-<li>fixed some namespace clashes</li>
-<li>changed <code class="docutils literal"><span class="pre">solar_utils.py</span></code> to <code class="docutils literal"><span class="pre">core.py</span></code></li>
-<li>changed <code class="docutils literal"><span class="pre">solar_utils_exceptions.py</span></code> to <code class="docutils literal"><span class="pre">exceptions.py</span></code></li>
-<li>conformed to variable naming conventions, removed camelcase, use underscores</li>
-<li>change use of builtin keyword <code class="docutils literal"><span class="pre">code</span></code> as variable to <code class="docutils literal"><span class="pre">err_code</span></code></li>
+<li><p>Linux x86-64 wheel with binaries in addition to MS Windows x86-64 wheel</p></li>
+<li><p>fixed some namespace clashes</p></li>
+<li><p>changed <code class="docutils literal notranslate"><span class="pre">solar_utils.py</span></code> to <code class="docutils literal notranslate"><span class="pre">core.py</span></code></p></li>
+<li><p>changed <code class="docutils literal notranslate"><span class="pre">solar_utils_exceptions.py</span></code> to <code class="docutils literal notranslate"><span class="pre">exceptions.py</span></code></p></li>
+<li><p>conformed to variable naming conventions, removed camelcase, use underscores</p></li>
+<li><p>change use of builtin keyword <code class="docutils literal notranslate"><span class="pre">code</span></code> as variable to <code class="docutils literal notranslate"><span class="pre">err_code</span></code></p></li>
 </ul>
 </div>
 <div class="section" id="v0-1-astronauts-2016-02-12">
 <h2>v0.1 - Astronauts (2016-02-12)<a class="headerlink" href="#v0-1-astronauts-2016-02-12" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>use pip or setuptools to install</li>
+<li><p>use pip or setuptools to install</p></li>
 </ul>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="core.html">Core</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="core.html#libraries">Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#get-solpos8760">get_solpos8760</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#get-solposam">get_solposAM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.html#id3">solposAM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.html#id4">spectrl2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.html#int2bits">_int2bits</a></li>
@@ -202,14 +197,15 @@ for more detail.</p>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -217,27 +213,28 @@ for more detail.</p>
             <p class="logo"><a href="#">
               <img class="logo" src="_static/sp_2014_logo_black_orange_rgb.png" alt="Logo"/>
             </a></p>
-  <h3><a href="#">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Welcome to SolarUtils&#8217;s documentation!</a></li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#requirements">Requirements</a></li>
-<li><a class="reference internal" href="#usage">Usage</a><ul>
-<li><a class="reference internal" href="#examples">Examples</a></li>
+<h1 class="logo"><a href="#">SolarUtils</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SunPower&repo=SolarUtils&type=watch&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
 </ul>
-</li>
-<li><a class="reference internal" href="#changes">Changes</a><ul>
-<li><a class="reference internal" href="#v0-2-1-bartenders-2016-07-11">v0.2.1 - Bartenders (2016-07-11)</a></li>
-<li><a class="reference internal" href="#v0-2-bakers-2016-02-23">v0.2 - Bakers (2016-02-23)</a></li>
-<li><a class="reference internal" href="#v0-1-4-artists-2016-02-22">v0.1.4 - Artists (2016-02-22)</a></li>
-<li><a class="reference internal" href="#v0-1-3-actuaries-2016-02-19">v0.1.3 - Actuaries (2016-02-19)</a></li>
-<li><a class="reference internal" href="#v0-1-2-animal-trainers-2016-02-12">v0.1.2 - Animal Trainers (2016-02-12)</a></li>
-<li><a class="reference internal" href="#v0-1-1-actors-2016-02-12">v0.1.1 - Actors (2016-02-12)</a></li>
-<li><a class="reference internal" href="#v0-1-astronauts-2016-02-12">v0.1 - Astronauts (2016-02-12)</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
-</ul>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
@@ -246,23 +243,24 @@ for more detail.</p>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/index.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -271,11 +269,11 @@ for more detail.</p>
       &copy;2016, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="_sources/index.txt"
+      <a href="_sources/index.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

@@ -6,10 +6,11 @@ Solar utilities based on `SOLPOS
 `NREL RREDC Solar Resource Models and Tools
 <http://www.nrel.gov/rredc/models_tools.html>`_
 
-2013 SunPower Corp.
+2013, 2019 SunPower Corp.
 """
 
 import ctypes
+import datetime as pydatetime
 import math
 import os
 import sys
@@ -41,6 +42,95 @@ def _int2bits(err_code):
     :returns: log(err_code, 2)
     """
     return int(math.log(err_code, 2))
+
+
+def get_solpos8760(location, year, weather):
+    """
+    Get SOLPOS hourly calculation for specified non-leap year.
+
+    :param location: [latitude, longitude, UTC-timezone]
+    :type location: float
+    :param year: a non-leap year
+    :type year: int
+    :param weather: [ambient-pressure (mB), ambient-temperature (C)]
+    :type weather: float
+    :returns: angles [degrees], airmass [atm]
+    :rtype: float
+    :raises: :exc:`~solar_utils.exceptions.SOLPOS_Error`
+
+    **Example:**
+
+    >>> location = [35.56836, -119.2022, -8.0]
+    >>> weather = [1015.62055, 40.0]
+    >>> angles, airmass = get_solpos8760(location, 2013, weather)
+    """
+    datetimes = [
+        (pydatetime.datetime(year, 1, 1, 0, 0, 0)
+         + pydatetime.timedelta(hours=h)).timetuple()[:6]
+        for h in range(8760)]
+    return get_solposAM(location, datetimes, weather)
+
+
+def get_solposAM(location, datetimes, weather):
+    """
+    Get SOLPOS hourly calculation for sequence of datetimes.
+
+    :param location: [latitude, longitude, UTC-timezone]
+    :type location: float
+    :param datetimes: [year, month, day, hour, minute, second]
+    :type datetimes: int
+    :param weather: [ambient-pressure (mB), ambient-temperature (C)]
+    :type weather: float
+    :returns: angles [degrees], airmass [atm]
+    :rtype: float
+    :raises: :exc:`~solar_utils.exceptions.SOLPOS_Error`
+
+    **Example:**
+
+    >>> location = [35.56836, -119.2022, -8.0]
+    >>> datetimes = [
+    ...     (datetime.datetime(2013, 1, 1, 0, 0, 0)
+    ...      + datetime.timedelta(hours=h)).timetuple()[:6]
+    ...     for h in range(1000)]
+    >>> weather = [1015.62055, 40.0]
+    >>> angles, airmass = get_solposAM(location, datetimes, weather)
+    """
+    count = len(datetimes)
+    # load the DLL
+    solposAM_dll = ctypes.cdll.LoadLibrary(SOLPOSAMDLL)
+    _get_solposAM = solposAM_dll.get_solposAM
+    # cast Python types as ctypes
+    _location = (ctypes.c_float * 3)(*location)
+    _datetime = ((ctypes.c_int * 6) * count)(*datetimes)
+    _weather = (ctypes.c_float * 2)(*weather)
+    # allocate space for results
+    angles = ((ctypes.c_float * 2) * count)()
+    airmass = ((ctypes.c_float * 2) * count)()
+    settings = ((ctypes.c_int * 2) * count)()
+    orientation = ((ctypes.c_float * 2) * count)()
+    shadowband = ((ctypes.c_float * 3) * count)()
+    err_code = (ctypes.c_long * count)()
+    # call
+    retval = _get_solposAM(
+        _location, _datetime, _weather, count, angles, airmass, settings,
+        orientation, shadowband, err_code)
+    if (retval != 0): raise RuntimeError('solposAM did not execute')
+    if all(ec == 0 for ec in err_code):
+        return angles, airmass
+    else:
+        for n, ec in enumerate(err_code):
+            if ec == 0: continue
+            # convert err_code to bits
+            _code = _int2bits(ec)
+            data = {'location': location,
+                    'datetime': datetimes[n],
+                    'weather': weather,
+                    'angles': angles[n],
+                    'airmass': airmass[n],
+                    'settings': settings[n],
+                    'orientation': orientation[n],
+                    'shadowband': shadowband[n]}
+            raise SOLPOS_Error(_code, data)
 
 
 def solposAM(location, datetime, weather):

@@ -1,6 +1,4 @@
-// 2013 Sunpower Corp.
-// Confidential & Proprietary
-// Do Not Distribute
+// 2013, 2019 Sunpower Corp.
 
 // include C Standard Library headers
 #include <math.h>
@@ -19,20 +17,24 @@
 #define DllExport
 #endif
 
-// solposAM
-// Inputs:
-//      location: (float*) [longitude, latitude, UTC-timezone]
-//      datetime: (int*) [year, month, day, hour, minute, second]
-//      weather: (float*) [ambient-pressure (mBar), ambient-temperature (C)]
-// Outputs:
-//      angles: (float*) [refracted-zenith, azimuth]
-//      airmass: (float*) [airmass (atmos), pressure-adjusted-airmass (atmos)]
-//      settings: (int*): [daynum, interval]
-//      orientation: (float*) [tilt, aspect] (degrees)
-//      shadowband: (float*): [width, radiation, sky]
-DllExport long solposAM( float *location, int *datetime, float *weather,
-    float *angles, float *airmass, int *settings, float *orientation,
-    float *shadowband )
+/* NREL SOLPOS solar position algorithm 
+ * 
+ * Parameters
+ * ----------
+ *     location: (float*) [longitude, latitude, UTC-timezone]
+ *     datetime: (int*) [year, month, day, hour, minute, second]
+ *     weather: (float*) [ambient-pressure (mBar), ambient-temperature (C)]
+ * Returns
+ * -------
+ *     angles: (float*) [refracted-zenith, azimuth]
+ *     airmass: (float*) [airmass (atmos), pressure-adjusted-airmass (atmos)]
+ *     settings: (int*): [daynum, interval]
+ *     orientation: (float*) [tilt, aspect] (degrees)
+ *     shadowband: (float*): [width, radiation, sky]
+ */
+DllExport long solposAM( float location[3], int datetime[6], float weather[2],
+    float angles[2], float airmass[2], int settings[2], float orientation[2],
+    float shadowband[3] )
 {
     
     /* variable declarations */
@@ -101,4 +103,17 @@ DllExport long solposAM( float *location, int *datetime, float *weather,
 
     return retval;
 
+}
+
+// get_solposAM
+DllExport long get_solposAM( float location[3], int datetimes[][6],
+    float weather[2], int cnt, float angles[][2], float airmass[][2],
+    int settings[][2], float orientation[][2], float shadowband[][3],
+    long err_code[])
+{
+    for (size_t i=0; i<cnt; i++){
+        err_code[i] = solposAM( location, datetimes[i], weather, angles[i],
+            airmass[i], settings[i], orientation[i], shadowband[i] );
+    }
+    return 0;
 }

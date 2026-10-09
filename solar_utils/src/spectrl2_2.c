@@ -186,8 +186,8 @@ int S_spectral2 (struct specdattype *specdat)
     static int  track;    /* tracking/fixed tilt switch */
     static int   nr;       /* indicates the wavelength range */
     static int   i;              /* Loop counter */
-    static int   false  = 0;     /* 0 is false */
-    static int   true   = 1;     /* non-0 is true */
+    static int   spectrl_false  = 0;     /* 0 is spectrl_false */
+    static int   spectrl_true   = 1;     /* non-0 is spectrl_true */
     static int   retval;    /* solpos return code */
     
     /* set up the solpos structure */
@@ -237,9 +237,9 @@ int S_spectral2 (struct specdattype *specdat)
     raddeg   = 180.0 / acos ( -1.0 );
         
     /* Angles of incidence and tilt angles must be preset */
-    track  = false;
+    track  = spectrl_false;
     if ( soldat->tilt < 0 ) // MM 2012-01-20, change tilt < 0, same as solpos
-        track    = true;
+        track    = spectrl_true;
     
     /* Find the sun */
     if ((retval = S_solpos (soldat )) != 0)

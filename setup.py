@@ -9,6 +9,7 @@ import sys
 import os
 import shutil
 from distutils import unixccompiler
+from distutils.sysconfig import customize_compiler
 try:
     from setuptools import setup, distutils, Extension
 except ImportError:
@@ -42,7 +43,8 @@ elif PLATFORM == 'darwin':
     LIB_FILE = 'lib%s.dylib'
     RPATH = "-Wl,-rpath,@loader_path/"
     INSTALL_NAME = "@rpath/" + LIB_FILE
-    CCFLAGS = LDFLAGS = ['-fPIC']
+    CCFLAGS = ['-fPIC']
+    LDFLAGS = ['-fPIC', '-dynamiclib']
 elif PLATFORM in ['linux', 'linux2']:
     PLATFORM = 'linux'
     LIB_FILE = 'lib%s.so'
@@ -148,6 +150,16 @@ elif not LIB_FILES_EXIST:
         CC = OSXCCOMPILER(verbose=3)
     else:
         CC = distutils.ccompiler.new_compiler()  # initialize compiler object
+    customize_compiler(CC)
+    # this must come after customize_compiler(CC)
+    if PLATFORM == 'darwin':
+        # on mac osx remove '-bundle' & '-shared' from linker flags
+        # so it doesn't clash with -dynamiclib & -install_name
+        CC.set_executables(
+            linker_so=[
+                flag for flag in CC.linker_so
+                if flag not in ('-bundle', '-shared')
+            ])
     CC.add_include_dir(SRC_DIR)  # set includes directory
     # compile solpos and solposAM objects into build directory
     OBJS = CC.compile([SOLPOS, SOLPOSAM], output_dir=BUILD_DIR,
